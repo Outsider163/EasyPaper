@@ -1,0 +1,14 @@
+node_modules/
+.output/
+.wxt/
+tmp/
+
+# Local learning notes are intentionally kept off GitHub.
+.local-docs/
+
+.env
+.env.*
+!.env.example
+
+npm-debug.log*
+*.zip

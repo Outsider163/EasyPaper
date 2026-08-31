@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EasyPaper 设置</title>
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <p class="eyebrow">EASYPAPER</p>
+        <h1>扩展设置</h1>
+        <p class="subtitle">自动识别论文来源，并显示你的本地期刊评价指标。</p>
+      </header>
+
+      <form id="settings-form" class="card">
+        <div class="section-heading">
+          <div>
+            <h2>页面识别</h2>
+            <p>适用于中国知网和 Google Scholar。</p>
+          </div>
+        </div>
+
+        <label class="setting-row">
+          <span>
+            <strong>启用论文来源与等级标签</strong>
+            <small>保存后刷新已打开的论文检索页面。</small>
+          </span>
+          <input id="enabled" type="checkbox" />
+        </label>
+
+        <div class="actions">
+          <button type="submit">保存设置</button>
+          <span id="save-status" class="status" role="status" aria-live="polite"></span>
+        </div>
+      </form>
+
+      <section class="card catalog-card" aria-labelledby="catalog-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="catalog-title">本地期刊目录</h2>
+            <p>上传 CSV、TSV 或 JSON，给期刊补充中科院分区、CCF、影响因子和学校等级。</p>
+          </div>
+          <span id="catalog-count" class="count-badge">0 条</span>
+        </div>
+
+        <div class="privacy-note">
+          文件只在当前浏览器中解析并保存，不会上传到服务器。影响因子必须同时填写年份。
+        </div>
+
+        <label class="file-picker" for="catalog-file">
+          <strong>选择期刊目录文件</strong>
+          <span id="file-name">支持 .csv、.tsv、.json，最大 2 MB</span>
+          <input
+            id="catalog-file"
+            type="file"
+            accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,application/json"
+          />
+        </label>
+
+        <div class="actions catalog-actions">
+          <button id="import-catalog" type="button" disabled>导入并替换目录</button>
+          <button id="download-template" class="secondary" type="button">下载 CSV 模板</button>
+          <button id="clear-catalog" class="danger" type="button">清空已上传目录</button>
+        </div>
+
+        <p id="catalog-status" class="status" role="status" aria-live="polite"></p>
+        <ul id="catalog-warnings" class="warnings" hidden></ul>
+
+        <div class="preview-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>类型</th>
+                <th>中科院</th>
+                <th>CCF</th>
+                <th>影响因子</th>
+                <th>学校等级</th>
+              </tr>
+            </thead>
+            <tbody id="catalog-preview">
+              <tr><td colspan="6" class="empty">尚未上传期刊目录</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <details>
+          <summary>支持的表头</summary>
+          <p class="field-help">
+            必填：期刊名称。可选：类型、别名、简称、ISSN、中科院分区、中科院版本、CCF级别、CCF版本、影响因子、影响因子年份、影响因子来源、学校等级、学校名称、学校版本、来源链接。多个别名请用 <code>|</code> 分隔。
+          </p>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>

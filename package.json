@@ -1,0 +1,25 @@
+{
+  "name": "easypaper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first browser extension for displaying academic venue rankings.",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4",
+    "wxt": "0.19.29"
+  }
+}
