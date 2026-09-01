@@ -49,7 +49,7 @@ EasyPaper 是一个本地优先的学术论文分区浏览器扩展。它会在�
 
 ### 方式一：下载测试版
 
-1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.1.0-chrome.zip`；
+1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.1.1-chrome.zip`；
 2. 将 ZIP 解压到一个固定目录；
 3. 在 Chrome 地址栏打开 `chrome://extensions/`；
 4. 打开右上角的“开发者模式”；
@@ -174,6 +174,7 @@ tests/                      自动测试与页面夹具
 - EasyPaper 只在来源名称精确命中时显示等级，不根据论文题目或作者推测来源；
 - CCF 中同名但分别属于期刊和会议的条目会保留为歧义，不会自动选择其中一个；
 - 影响因子具有年份属性，自定义目录必须同时填写数值和数据年份；
+- 完整的中科院分区与 JCR 影响因子目录不随仓库发布；请仅导入自己合法取得且有权使用的数据，不要将受许可限制的数据公开上传；
 - 本仓库不包含用于数据提取的原始 PDF、个人学习文档或本地构建产物。
 
 ## 后续计划
