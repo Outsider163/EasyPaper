@@ -1,4 +1,8 @@
-import { createVenueMatcher, type VenueMatchResult } from '../matcher';
+import {
+  createVenueMatcher,
+  type VenueMatcher,
+  type VenueMatchResult,
+} from '../matcher';
 import { normalizeVenueName } from '../normalize';
 import type { VenueRecord } from '../types';
 import { CCF_7TH_VENUES } from './ccf-7th';
@@ -23,10 +27,7 @@ function mergeBundledCatalogs(): VenueRecord[] {
 
   for (const schoolVenue of YNUFE_2026_VENUES) {
     const exact = exactTypeIndex.get(typeNameKey(schoolVenue));
-    const matched = exact ?? selectSameType(ccfMatcher.match({
-      candidate: schoolVenue.canonicalName,
-      sourceTruncated: false,
-    }), schoolVenue.type);
+    const matched = exact ?? findCcfVenue(ccfMatcher, schoolVenue);
     const index = matched ? recordIndex.get(matched.id) : undefined;
 
     if (index === undefined) {
@@ -75,6 +76,32 @@ function applyYnufeCcfRules(records: VenueRecord[]): void {
   }
 }
 
+function findCcfVenue(
+  matcher: VenueMatcher,
+  venue: VenueRecord,
+): VenueRecord | undefined {
+  const candidates = [
+    venue.canonicalName,
+    ...venue.aliases,
+    ...(venue.acronyms ?? []),
+    andAmpersandVariant(venue.canonicalName),
+  ].filter((candidate): candidate is string => Boolean(candidate));
+  for (const candidate of candidates) {
+    const matched = selectSameType(
+      matcher.match({ candidate, sourceTruncated: false }),
+      venue.type,
+    );
+    if (matched) return matched;
+  }
+  return undefined;
+}
+
+function andAmpersandVariant(value: string): string | undefined {
+  if (/\band\b/iu.test(value)) return value.replace(/\band\b/giu, '&');
+  if (value.includes('&')) return value.replace(/&/gu, 'and');
+  return undefined;
+}
+
 function selectSameType(
   match: VenueMatchResult,
   type: VenueRecord['type'],
@@ -103,6 +130,7 @@ function cloneVenue(venue: VenueRecord): VenueRecord {
     cas: venue.cas ? { ...venue.cas } : undefined,
     impactFactor: venue.impactFactor ? { ...venue.impactFactor } : undefined,
     school: venue.school ? { ...venue.school } : undefined,
+    labels: venue.labels?.map((label) => ({ ...label })),
   };
 }
 

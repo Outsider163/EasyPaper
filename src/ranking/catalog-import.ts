@@ -4,12 +4,13 @@ import type {
   CcfRank,
   ImpactFactorValue,
   RankingValue,
+  VenueLabel,
   VenueRecord,
   VenueType,
 } from './types';
 
 export const MAX_CATALOG_RECORDS = 30_000;
-export const MAX_CATALOG_FILE_BYTES = 2 * 1024 * 1024;
+export const MAX_CATALOG_FILE_BYTES = 15 * 1024 * 1024;
 
 export interface CatalogImportResult {
   records: VenueRecord[];
@@ -34,6 +35,13 @@ const HEADER_ALIASES = {
   schoolRank: ['schoolrank', '学校等级', '学校分区'],
   schoolName: ['schoolname', '学校名称', '学校目录'],
   schoolEdition: ['schooledition', '学校版本', '学校年份'],
+  casDisciplineLabels: ['casdisciplinelabels', '中科院学科标签', '中科院标签'],
+  newRisingLabels: ['newrisinglabels', '新锐分区标签', '新锐标签'],
+  newRisingEdition: ['newrisingedition', '新锐版本', '新锐年份'],
+  indexingLabels: ['indexinglabels', '检索标签', '数据库标签', '收录标签'],
+  publicationTypeLabels: ['publicationtypelabels', '期刊类型标签'],
+  warningLabels: ['warninglabels', '预警标签', '预警标记'],
+  noteLabels: ['notelabels', '其他标签', '标注标签'],
   sourceUrl: ['sourceurl', 'url', '来源链接'],
 } as const;
 
@@ -96,8 +104,9 @@ export function parseVenueCatalog(
     const cas = parseCas(row, rowNumber, sourceUrl);
     const impactFactor = parseImpactFactor(row, rowNumber, sourceUrl);
     const school = parseSchool(row, sourceUrl);
+    const labels = parseVenueLabels(row);
 
-    if (!ccf && !cas && !impactFactor && !school) {
+    if (!ccf && !cas && !impactFactor && !school && labels.length === 0) {
       warnings.push(`第 ${rowNumber} 行“${name}”只有名称，没有等级指标。`);
     }
 
@@ -112,6 +121,7 @@ export function parseVenueCatalog(
       cas,
       impactFactor,
       school,
+      labels: labels.length > 0 ? labels : undefined,
     });
   });
 
@@ -135,6 +145,13 @@ export const CATALOG_CSV_TEMPLATE = [
     '学校等级',
     '学校名称',
     '学校版本',
+    '中科院学科标签',
+    '新锐分区标签',
+    '新锐版本',
+    '检索标签',
+    '期刊类型标签',
+    '预警标签',
+    '其他标签',
     '来源链接',
   ],
   [
@@ -153,6 +170,13 @@ export const CATALOG_CSV_TEMPLATE = [
     'A',
     '示例大学',
     '2026',
+    '计算机科学 2区',
+    '计算机科学 1区|计算机科学 TOP',
+    '2026',
+    'SCIE|Scopus',
+    'Review',
+    '',
+    '中国期刊支持计划',
     '',
   ],
 ]
@@ -352,6 +376,43 @@ function parseSchool(
     sourceUrl,
     catalog: readString(row.schoolName) ?? '学校目录',
   };
+}
+
+function parseVenueLabels(
+  row: Partial<Record<CanonicalField, unknown>>,
+): VenueLabel[] {
+  const definitions: Array<{
+    field: CanonicalField;
+    kind: VenueLabel['kind'];
+    edition?: string;
+  }> = [
+    {
+      field: 'casDisciplineLabels',
+      kind: 'cas-discipline',
+      edition: readString(row.casEdition),
+    },
+    {
+      field: 'newRisingLabels',
+      kind: 'new-rising',
+      edition: readString(row.newRisingEdition),
+    },
+    { field: 'indexingLabels', kind: 'indexing' },
+    { field: 'publicationTypeLabels', kind: 'publication-type' },
+    { field: 'warningLabels', kind: 'warning' },
+    { field: 'noteLabels', kind: 'note' },
+  ];
+  const labels = definitions.flatMap(({ field, kind, edition }) =>
+    splitList(row[field]).map((text) => ({ kind, text, edition })),
+  );
+  const seen = new Set<string>();
+  return labels.filter((label) => {
+    const key = `${label.kind}\u0000${label.text.normalize('NFKC').toLowerCase()}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
 }
 
 function splitList(value: unknown): string[] {

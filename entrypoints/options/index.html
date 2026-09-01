@@ -40,7 +40,7 @@
         <div class="section-heading">
           <div>
             <h2 id="catalog-title">本地期刊目录</h2>
-            <p>上传 CSV、TSV 或 JSON，给期刊补充中科院分区、CCF、影响因子和学校等级。</p>
+            <p>上传 CSV、TSV 或 JSON，补充中科院、CCF、影响因子、新锐分区、检索数据库和学校等级。</p>
           </div>
           <span id="catalog-count" class="count-badge">0 条</span>
         </div>
@@ -51,7 +51,7 @@
 
         <label class="file-picker" for="catalog-file">
           <strong>选择期刊目录文件</strong>
-          <span id="file-name">支持 .csv、.tsv、.json，最大 2 MB</span>
+          <span id="file-name">支持 .csv、.tsv、.json，最大 15 MB</span>
           <input
             id="catalog-file"
             type="file"
@@ -78,10 +78,11 @@
                 <th>CCF</th>
                 <th>影响因子</th>
                 <th>学校等级</th>
+                <th>新锐及其他标签</th>
               </tr>
             </thead>
             <tbody id="catalog-preview">
-              <tr><td colspan="6" class="empty">尚未上传期刊目录</td></tr>
+              <tr><td colspan="7" class="empty">尚未上传期刊目录</td></tr>
             </tbody>
           </table>
         </div>
@@ -89,7 +90,7 @@
         <details>
           <summary>支持的表头</summary>
           <p class="field-help">
-            必填：期刊名称。可选：类型、别名、简称、ISSN、中科院分区、中科院版本、CCF级别、CCF版本、影响因子、影响因子年份、影响因子来源、学校等级、学校名称、学校版本、来源链接。多个别名请用 <code>|</code> 分隔。
+            必填：期刊名称。可选：类型、别名、简称、ISSN、中科院分区、中科院版本、CCF级别、CCF版本、影响因子、影响因子年份、影响因子来源、学校等级、学校名称、学校版本、中科院学科标签、新锐分区标签、新锐版本、检索标签、期刊类型标签、预警标签、其他标签、来源链接。一个单元格含多个标签时请用 <code>|</code> 分隔。
           </p>
         </details>
       </section>

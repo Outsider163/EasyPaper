@@ -1,6 +1,19 @@
 export type VenueType = 'journal' | 'conference';
 export type CcfRank = 'A' | 'B' | 'C';
 export type CasQuartile = '1' | '2' | '3' | '4';
+export type VenueLabelKind =
+  | 'cas-discipline'
+  | 'new-rising'
+  | 'indexing'
+  | 'publication-type'
+  | 'warning'
+  | 'note';
+
+export interface VenueLabel {
+  kind: VenueLabelKind;
+  text: string;
+  edition?: string;
+}
 
 export interface RankingValue<Rank extends string = string> {
   rank: Rank;
@@ -28,4 +41,5 @@ export interface VenueRecord {
   cas?: RankingValue<CasQuartile>;
   impactFactor?: ImpactFactorValue;
   school?: RankingValue;
+  labels?: VenueLabel[];
 }

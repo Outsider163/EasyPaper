@@ -1,11 +1,18 @@
 import type { VenueMatchResult } from './matcher';
+import type { VenueLabel } from './types';
 
 export type RankingBadgeKind =
   | 'source'
   | 'ccf'
   | 'cas'
+  | 'cas-discipline'
+  | 'new-rising'
+  | 'indexing'
   | 'impact-factor'
-  | 'school';
+  | 'school'
+  | 'publication-type'
+  | 'warning'
+  | 'note';
 
 export interface RankingBadge {
   kind: RankingBadgeKind;
@@ -35,7 +42,17 @@ export function buildRankingBadges(
   if (!matchedVenue) {
     return badges;
   }
-  if (matchedVenue.cas) {
+  const supplemental = matchedVenue.labels ?? [];
+  appendLabels(badges, supplemental, [
+    'new-rising',
+    'cas-discipline',
+    'indexing',
+  ]);
+
+  const hasCasDiscipline = supplemental.some(
+    (label) => label.kind === 'cas-discipline',
+  );
+  if (matchedVenue.cas && !hasCasDiscipline) {
     badges.push({ kind: 'cas', text: `中科院 ${matchedVenue.cas.rank}区` });
   }
   if (matchedVenue.ccf) {
@@ -53,6 +70,7 @@ export function buildRankingBadges(
       text: `${matchedVenue.school.catalog ?? '学校'} ${matchedVenue.school.rank}`,
     });
   }
+  appendLabels(badges, supplemental, ['publication-type', 'warning', 'note']);
   return badges;
 }
 
@@ -117,6 +135,46 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       font-weight: 700;
     }
 
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cas-discipline"] {
+      border-color: #cbb7f4;
+      background: #f3e8ff;
+      color: #6b21a8;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="new-rising"] {
+      border-color: #ffaaa8;
+      background: #ffd8d6;
+      color: #9f1010;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="indexing"] {
+      border-color: #78d2c5;
+      background: #c9f3eb;
+      color: #075e54;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="publication-type"] {
+      border-color: #a8c7fa;
+      background: #e8f0fe;
+      color: #174ea6;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="warning"] {
+      border-color: #ef6c64;
+      background: #fce8e6;
+      color: #b3261e;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="note"] {
+      border-color: #f7cb73;
+      background: #fef7e0;
+      color: #8a4b00;
+    }
+
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="impact-factor"] {
       border-color: #a8dab5;
       background: #e6f4ea;
@@ -165,7 +223,29 @@ export function buildRankingTooltip(
       `${venue.school.catalog ?? '学校目录'}：${venue.school.rank}${editionText(venue.school.edition)}`,
     );
   }
+  for (const label of venue.labels ?? []) {
+    lines.push(`${formatVenueLabel(label)}${editionText(label.edition)}`);
+  }
   return lines.join('\n');
+}
+
+function appendLabels(
+  badges: RankingBadge[],
+  labels: readonly VenueLabel[],
+  kinds: readonly VenueLabel['kind'][],
+): void {
+  for (const kind of kinds) {
+    for (const label of labels.filter((item) => item.kind === kind)) {
+      badges.push({ kind, text: formatVenueLabel(label) });
+    }
+  }
+}
+
+function formatVenueLabel(label: VenueLabel): string {
+  if (label.kind === 'new-rising') return `新锐分区 ${label.text}`;
+  if (label.kind === 'cas-discipline') return `中科院 ${label.text}`;
+  if (label.kind === 'warning') return `预警 ${label.text}`;
+  return label.text;
 }
 
 function editionText(edition: string | undefined): string {

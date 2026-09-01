@@ -53,7 +53,7 @@ async function initializeOptions(): Promise<void> {
     const file = fileInput.files?.[0];
     if (!file) {
       if (fileName) {
-        fileName.textContent = '支持 .csv、.tsv、.json，最大 2 MB';
+        fileName.textContent = '支持 .csv、.tsv、.json，最大 15 MB';
       }
       return;
     }
@@ -61,7 +61,7 @@ async function initializeOptions(): Promise<void> {
       fileName.textContent = `${file.name} · ${formatBytes(file.size)}`;
     }
     if (file.size > MAX_CATALOG_FILE_BYTES) {
-      showStatus(catalogStatus, '文件超过 2 MB，未读取。', 'error');
+      showStatus(catalogStatus, '文件超过 15 MB，未读取。', 'error');
       return;
     }
 
@@ -153,7 +153,7 @@ function renderCatalog(records: readonly VenueRecord[]): void {
   if (records.length === 0) {
     const row = document.createElement('tr');
     const cell = document.createElement('td');
-    cell.colSpan = 6;
+    cell.colSpan = 7;
     cell.className = 'empty';
     cell.textContent = '尚未上传期刊目录';
     row.appendChild(cell);
@@ -178,6 +178,7 @@ function renderCatalog(records: readonly VenueRecord[]): void {
           ? `${record.school.catalog ?? '学校'} ${record.school.rank}`
           : '—',
       ),
+      cell(formatLabels(record)),
     );
     preview.appendChild(row);
   }
@@ -213,6 +214,13 @@ function cell(text: string): HTMLTableCellElement {
   return element;
 }
 
+function formatLabels(record: VenueRecord): string {
+  const labels = record.labels ?? [];
+  if (labels.length === 0) return '—';
+  const visible = labels.slice(0, 3).map((label) => label.text).join(' / ');
+  return labels.length > 3 ? `${visible} / 另 ${labels.length - 3} 项` : visible;
+}
+
 function showStatus(
   element: HTMLElement | null,
   message: string,
@@ -230,7 +238,9 @@ function errorMessage(error: unknown): string {
 }
 
 function formatBytes(bytes: number): string {
-  return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 void initializeOptions();

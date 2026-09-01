@@ -43,6 +43,51 @@ describe('user venue catalog import', () => {
     ]);
   });
 
+  it('parses and renders new-rising, indexing, warning, and note labels', () => {
+    const result = parseVenueCatalog(
+      [
+        '期刊名称,中科院分区,中科院版本,中科院学科标签,新锐分区标签,新锐版本,检索标签,期刊类型标签,预警标签,其他标签',
+        'IEEE Transactions on Pattern Analysis and Machine Intelligence,1区,2025,计算机科学 1区,计算机科学 1区|计算机科学 TOP|计算机：人工智能 1区,2026,SCIE|Scopus,Review|Data Journal,Under Review,中国期刊支持计划',
+      ].join('\n'),
+      'labels.csv',
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records[0]?.labels).toEqual([
+      { kind: 'cas-discipline', text: '计算机科学 1区', edition: '2025' },
+      { kind: 'new-rising', text: '计算机科学 1区', edition: '2026' },
+      { kind: 'new-rising', text: '计算机科学 TOP', edition: '2026' },
+      { kind: 'new-rising', text: '计算机：人工智能 1区', edition: '2026' },
+      { kind: 'indexing', text: 'SCIE', edition: undefined },
+      { kind: 'indexing', text: 'Scopus', edition: undefined },
+      { kind: 'publication-type', text: 'Review', edition: undefined },
+      { kind: 'publication-type', text: 'Data Journal', edition: undefined },
+      { kind: 'warning', text: 'Under Review', edition: undefined },
+      { kind: 'note', text: '中国期刊支持计划', edition: undefined },
+    ]);
+
+    setUserVenueCatalog(result.records);
+    const match = ccf2026SeedMatcher.match({ candidate: 'IEEE Transactions on Pattern Analysis and Machine Intelligence' });
+    const badges = buildRankingBadges(match, 'TPAMI');
+    expect(
+      badges.filter((badge) =>
+        ['new-rising', 'cas-discipline', 'indexing', 'publication-type', 'warning', 'note'].includes(badge.kind),
+      ),
+    ).toEqual([
+      { kind: 'new-rising', text: '新锐分区 计算机科学 1区' },
+      { kind: 'new-rising', text: '新锐分区 计算机科学 TOP' },
+      { kind: 'new-rising', text: '新锐分区 计算机：人工智能 1区' },
+      { kind: 'cas-discipline', text: '中科院 计算机科学 1区' },
+      { kind: 'indexing', text: 'SCIE' },
+      { kind: 'indexing', text: 'Scopus' },
+      { kind: 'publication-type', text: 'Review' },
+      { kind: 'publication-type', text: 'Data Journal' },
+      { kind: 'warning', text: '预警 Under Review' },
+      { kind: 'note', text: '中国期刊支持计划' },
+    ]);
+    expect(badges.some((badge) => badge.kind === 'cas')).toBe(false);
+  });
+
   it('parses JSON and defaults missing type to journal', () => {
     const result = parseVenueCatalog(
       JSON.stringify([
@@ -113,6 +158,32 @@ describe('active catalog and badges', () => {
       { kind: 'impact-factor', text: 'IF 33.1（2025）' },
       { kind: 'school', text: '示例大学 A+' },
     ]);
+  });
+
+  it('enriches a bundled CCF conference through its unique acronym', () => {
+    const imported = parseVenueCatalog(
+      [
+        '期刊名称,类型,简称,新锐分区标签,新锐版本',
+        'ACM SIGCOMM Conference,会议,SIGCOMM,会议 1区|会议 TOP,2026',
+      ].join('\n'),
+      'xr-conferences.csv',
+    );
+
+    expect(setUserVenueCatalog(imported.records)).toEqual({
+      userRecords: 1,
+      activeRecords: BUNDLED_CATALOG_STATS.activeVenues,
+    });
+    const match = ccf2026SeedMatcher.match({ candidate: 'SIGCOMM' });
+    expect(match).toMatchObject({
+      status: 'matched',
+      venue: {
+        ccf: { rank: 'A' },
+        labels: [
+          { kind: 'new-rising', text: '会议 1区', edition: '2026' },
+          { kind: 'new-rising', text: '会议 TOP', edition: '2026' },
+        ],
+      },
+    });
   });
 
   it('keeps a journal and conference acronym collision safely ambiguous', () => {

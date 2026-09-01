@@ -57,13 +57,7 @@ export function mergeVenueCatalogs(
   const recordIndex = new Map(records.map((venue, index) => [venue.id, index]));
 
   for (const userVenue of userVenues) {
-    const bundledMatch = selectSameType(
-      bundledMatcher.match({
-        candidate: userVenue.canonicalName,
-        sourceTruncated: false,
-      }),
-      userVenue.type,
-    );
+    const bundledMatch = findBundledVenue(userVenue);
 
     if (!bundledMatch) {
       records.push(cloneVenue(userVenue));
@@ -96,10 +90,32 @@ export function mergeVenueCatalogs(
       cas: userVenue.cas ?? bundledVenue.cas,
       impactFactor: userVenue.impactFactor ?? bundledVenue.impactFactor,
       school: userVenue.school ?? bundledVenue.school,
+      labels: optionalLabelUnique([
+        ...(bundledVenue.labels ?? []),
+        ...(userVenue.labels ?? []),
+      ]),
     };
   }
 
   return records;
+}
+
+function findBundledVenue(userVenue: VenueRecord): VenueRecord | undefined {
+  const candidates = [
+    userVenue.canonicalName,
+    ...userVenue.aliases,
+    ...(userVenue.acronyms ?? []),
+  ];
+  for (const candidate of candidates) {
+    const venue = selectSameType(
+      bundledMatcher.match({ candidate, sourceTruncated: false }),
+      userVenue.type,
+    );
+    if (venue) {
+      return venue;
+    }
+  }
+  return undefined;
 }
 
 function selectSameType(
@@ -139,12 +155,26 @@ function cloneVenue(venue: VenueRecord): VenueRecord {
     cas: venue.cas ? { ...venue.cas } : undefined,
     impactFactor: venue.impactFactor ? { ...venue.impactFactor } : undefined,
     school: venue.school ? { ...venue.school } : undefined,
+    labels: venue.labels?.map((label) => ({ ...label })),
   };
 }
 
 function optionalUnique(values: string[]): string[] | undefined {
   const result = unique(values);
   return result.length > 0 ? result : undefined;
+}
+
+function optionalLabelUnique(
+  values: NonNullable<VenueRecord['labels']>,
+): VenueRecord['labels'] {
+  const seen = new Set<string>();
+  const result = values.filter((label) => {
+    const key = `${label.kind}\u0000${label.text.normalize('NFKC').toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return result.length > 0 ? result.map((label) => ({ ...label })) : undefined;
 }
 
 function unique(values: string[]): string[] {

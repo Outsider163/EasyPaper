@@ -163,6 +163,15 @@ describe('bundled catalog integrity', () => {
         school: { rank: 'A', catalog: '云南财经大学' },
       },
     });
+    expect(
+      ccf2026SeedMatcher.match({ candidate: 'Information Processing & Management' }),
+    ).toMatchObject({
+      status: 'matched',
+      venue: {
+        ccf: { rank: 'B' },
+        school: { rank: 'A', catalog: '云南财经大学' },
+      },
+    });
   });
 
   it('does not fuzzy-match a title-like or year-suffixed source', () => {
