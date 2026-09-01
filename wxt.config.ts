@@ -8,6 +8,7 @@ export default defineConfig({
       '自动识别论文来源并显示 CCF、学校目录和可选在线学术评价标签。',
     permissions: ['storage', 'unlimitedStorage', 'alarms'],
     host_permissions: [
+      'https://cdn.jsdelivr.net/gh/Outsider163/EasyPaper@main/*',
       'https://raw.githubusercontent.com/Outsider163/EasyPaper/*',
     ],
     action: {

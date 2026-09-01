@@ -5,8 +5,7 @@ import { BUNDLED_VENUES } from '../src/ranking/data/bundled';
 
 const CATALOG_VERSION = '2026-core.1';
 const GENERATED_AT = '2026-09-01T13:30:00.000Z';
-const DATA_URL =
-  'https://raw.githubusercontent.com/Outsider163/EasyPaper/main/catalog/public-catalog.csv';
+const DATA_URL = `./public-catalog.csv?v=${CATALOG_VERSION}`;
 const headers = [
   '期刊名称',
   '类型',

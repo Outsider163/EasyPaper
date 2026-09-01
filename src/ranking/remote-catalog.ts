@@ -11,7 +11,11 @@ import { downloadRemoteCatalog } from './remote-catalog-core';
 import { loadSettings, saveSettings } from '../settings';
 
 export const DEFAULT_REMOTE_CATALOG_MANIFEST_URL =
-  'https://raw.githubusercontent.com/Outsider163/EasyPaper/main/catalog/manifest.json';
+  'https://cdn.jsdelivr.net/gh/Outsider163/EasyPaper@main/catalog/manifest.json';
+export const REMOTE_CATALOG_MANIFEST_URLS = [
+  DEFAULT_REMOTE_CATALOG_MANIFEST_URL,
+  'https://raw.githubusercontent.com/Outsider163/EasyPaper/main/catalog/manifest.json',
+] as const;
 export const REMOTE_CATALOG_CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000;
 
 export type RemoteCatalogUpdateStatus =
@@ -69,10 +73,24 @@ export async function updateRemoteCatalog(
   }
 
   try {
-    const downloaded = await downloadRemoteCatalog(
-      options.manifestUrl ?? DEFAULT_REMOTE_CATALOG_MANIFEST_URL,
-      options.fetcher,
-    );
+    const manifestUrls = options.manifestUrl
+      ? [options.manifestUrl]
+      : [...REMOTE_CATALOG_MANIFEST_URLS];
+    let downloaded: Awaited<ReturnType<typeof downloadRemoteCatalog>> | undefined;
+    let usedManifestUrl: string | undefined;
+    let lastDownloadError: unknown;
+    for (const manifestUrl of manifestUrls) {
+      try {
+        downloaded = await downloadRemoteCatalog(manifestUrl, options.fetcher);
+        usedManifestUrl = manifestUrl;
+        break;
+      } catch (error) {
+        lastDownloadError = error;
+      }
+    }
+    if (!downloaded || !usedManifestUrl) {
+      throw lastDownloadError ?? new Error('所有在线目录地址均不可用。');
+    }
     if (
       metadata?.source === 'remote' &&
       metadata.catalogVersion === downloaded.manifest.catalogVersion &&
@@ -97,8 +115,7 @@ export async function updateRemoteCatalog(
       installedAt: now.toISOString(),
       lastCheckedAt: now.toISOString(),
       sha256: downloaded.manifest.sha256,
-      manifestUrl:
-        options.manifestUrl ?? DEFAULT_REMOTE_CATALOG_MANIFEST_URL,
+      manifestUrl: usedManifestUrl,
     };
     await saveUserVenueCatalog(downloaded.records);
     await saveCatalogMetadata(nextMetadata);
