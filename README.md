@@ -47,7 +47,18 @@ EasyPaper 是一个本地优先的学术论文分区浏览器扩展。它会在�
 
 ## 安装
 
-### 方式一：从源码构建
+### 方式一：下载测试版
+
+1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.1.0-chrome.zip`；
+2. 将 ZIP 解压到一个固定目录；
+3. 在 Chrome 地址栏打开 `chrome://extensions/`；
+4. 打开右上角的“开发者模式”；
+5. 点击“加载已解压的扩展程序”；
+6. 选择刚才解压得到的目录。
+
+不要直接选择 ZIP 文件，Chrome 需要加载解压后的目录。
+
+### 方式二：从源码构建
 
 需要先安装 Node.js 和 npm，推荐使用当前长期支持版本。
 
