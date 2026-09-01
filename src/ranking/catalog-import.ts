@@ -8,7 +8,7 @@ import type {
   VenueType,
 } from './types';
 
-export const MAX_CATALOG_RECORDS = 10_000;
+export const MAX_CATALOG_RECORDS = 30_000;
 export const MAX_CATALOG_FILE_BYTES = 2 * 1024 * 1024;
 
 export interface CatalogImportResult {

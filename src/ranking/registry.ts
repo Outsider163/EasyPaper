@@ -32,7 +32,9 @@ export function setUserVenueCatalog(
   const records = mergeVenueCatalogs(userVenues);
   const matcher = createVenueMatcher(records);
   const newConflict = matcher.conflicts.find(
-    (conflict) => !bundledConflictSignatures.has(conflictSignature(conflict)),
+    (conflict) =>
+      !bundledConflictSignatures.has(conflictSignature(conflict)) &&
+      !isCrossTypeConflict(conflict),
   );
   if (newConflict) {
     const names = newConflict.venues
@@ -112,6 +114,11 @@ function selectSameType(
   }
   const sameType = match.candidates.filter((venue) => venue.type === type);
   return sameType.length === 1 ? sameType[0] : undefined;
+}
+
+function isCrossTypeConflict(conflict: VenueKeyConflict): boolean {
+  const venueTypes = new Set(conflict.venues.map((venue) => venue.type));
+  return venueTypes.size === conflict.venues.length;
 }
 
 function conflictSignature(conflict: VenueKeyConflict): string {

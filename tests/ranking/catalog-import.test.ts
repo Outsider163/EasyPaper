@@ -115,6 +115,39 @@ describe('active catalog and badges', () => {
     ]);
   });
 
+  it('keeps a journal and conference acronym collision safely ambiguous', () => {
+    const imported = parseVenueCatalog(
+      '期刊名称,类型,中科院分区,中科院版本\nSPIN,期刊,4区,2025',
+      'spin.csv',
+    );
+
+    expect(setUserVenueCatalog(imported.records)).toEqual({
+      userRecords: 1,
+      activeRecords: BUNDLED_CATALOG_STATS.activeVenues + 1,
+    });
+    expect(ccf2026SeedMatcher.match({ candidate: 'SPIN' })).toMatchObject({
+      status: 'ambiguous',
+      candidates: expect.arrayContaining([
+        expect.objectContaining({
+          type: 'journal',
+          cas: expect.objectContaining({ rank: '4' }),
+        }),
+        expect.objectContaining({
+          type: 'conference',
+          ccf: expect.objectContaining({ rank: 'C' }),
+        }),
+      ]),
+    });
+    expect(
+      ccf2026SeedMatcher.match({
+        candidate: 'International Symposium on Model Checking of Software',
+      }),
+    ).toMatchObject({
+      status: 'matched',
+      venue: { type: 'conference', ccf: { rank: 'C' } },
+    });
+  });
+
   it('renders the built-in YNUFE rank without requiring an upload', () => {
     const match = ccf2026SeedMatcher.match({ candidate: '财经研究' });
 
