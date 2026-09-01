@@ -5,11 +5,14 @@ export type RankingBadgeKind =
   | 'source'
   | 'ccf'
   | 'cas'
+  | 'cas-upgraded'
   | 'cas-discipline'
+  | 'jcr-quartile'
   | 'new-rising'
   | 'indexing'
   | 'impact-factor'
   | 'school'
+  | 'sjr'
   | 'publication-type'
   | 'warning'
   | 'note';
@@ -45,14 +48,17 @@ export function buildRankingBadges(
   const supplemental = matchedVenue.labels ?? [];
   appendLabels(badges, supplemental, [
     'new-rising',
+    'cas-upgraded',
     'cas-discipline',
+    'jcr-quartile',
     'indexing',
   ]);
 
-  const hasCasDiscipline = supplemental.some(
-    (label) => label.kind === 'cas-discipline',
+  const hasDetailedCasLabel = supplemental.some(
+    (label) =>
+      label.kind === 'cas-upgraded' || label.kind === 'cas-discipline',
   );
-  if (matchedVenue.cas && !hasCasDiscipline) {
+  if (matchedVenue.cas && !hasDetailedCasLabel) {
     badges.push({ kind: 'cas', text: `中科院 ${matchedVenue.cas.rank}区` });
   }
   if (matchedVenue.ccf) {
@@ -70,7 +76,7 @@ export function buildRankingBadges(
       text: `${matchedVenue.school.catalog ?? '学校'} ${matchedVenue.school.rank}`,
     });
   }
-  appendLabels(badges, supplemental, ['publication-type', 'warning', 'note']);
+  appendLabels(badges, supplemental, ['sjr', 'publication-type', 'warning', 'note']);
   return badges;
 }
 
@@ -142,6 +148,20 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       font-weight: 700;
     }
 
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cas-upgraded"] {
+      border-color: #ffaaa8;
+      background: #ffd8d6;
+      color: #9f1010;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="jcr-quartile"] {
+      border-color: #d6b6f5;
+      background: #f3e8ff;
+      color: #6b21a8;
+      font-weight: 700;
+    }
+
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="new-rising"] {
       border-color: #ffaaa8;
       background: #ffd8d6;
@@ -153,6 +173,13 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       border-color: #78d2c5;
       background: #c9f3eb;
       color: #075e54;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="sjr"] {
+      border-color: #9ec5fe;
+      background: #e8f0fe;
+      color: #174ea6;
       font-weight: 700;
     }
 
@@ -243,7 +270,9 @@ function appendLabels(
 
 function formatVenueLabel(label: VenueLabel): string {
   if (label.kind === 'new-rising') return `新锐分区 ${label.text}`;
+  if (label.kind === 'cas-upgraded') return `SCI升级版 ${label.text}`;
   if (label.kind === 'cas-discipline') return `中科院 ${label.text}`;
+  if (label.kind === 'jcr-quartile') return `JCR ${label.text}`;
   if (label.kind === 'warning') return `预警 ${label.text}`;
   return label.text;
 }

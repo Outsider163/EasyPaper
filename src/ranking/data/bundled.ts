@@ -8,6 +8,15 @@ import type { VenueRecord } from '../types';
 import { CCF_7TH_VENUES } from './ccf-7th';
 import { YNUFE_2026_VENUES } from './ynufe-2026';
 
+const CONTROLLED_CCF_NAME_VARIANTS = new Map<string, readonly string[]>([
+  [
+    normalizeVenueName(
+      'Future Generation Computer Systems-The International Journal of eScience',
+    ),
+    ['Future Generation Computer Systems'],
+  ],
+]);
+
 export const BUNDLED_VENUES: readonly VenueRecord[] = mergeBundledCatalogs();
 
 export const BUNDLED_CATALOG_STATS = Object.freeze({
@@ -24,10 +33,20 @@ function mergeBundledCatalogs(): VenueRecord[] {
   const exactTypeIndex = new Map(
     records.map((venue) => [typeNameKey(venue), venue]),
   );
+  const looseTypeIndex = new Map<string, VenueRecord[]>();
+  for (const venue of records) {
+    for (const name of [venue.canonicalName, ...venue.aliases]) {
+      const key = looseTypeNameKey(venue.type, name);
+      const candidates = looseTypeIndex.get(key) ?? [];
+      candidates.push(venue);
+      looseTypeIndex.set(key, candidates);
+    }
+  }
 
   for (const schoolVenue of YNUFE_2026_VENUES) {
     const exact = exactTypeIndex.get(typeNameKey(schoolVenue));
-    const matched = exact ?? findCcfVenue(ccfMatcher, schoolVenue);
+    const matched =
+      exact ?? findCcfVenue(ccfMatcher, schoolVenue, looseTypeIndex);
     const index = matched ? recordIndex.get(matched.id) : undefined;
 
     if (index === undefined) {
@@ -79,12 +98,16 @@ function applyYnufeCcfRules(records: VenueRecord[]): void {
 function findCcfVenue(
   matcher: VenueMatcher,
   venue: VenueRecord,
+  looseTypeIndex: ReadonlyMap<string, readonly VenueRecord[]>,
 ): VenueRecord | undefined {
   const candidates = [
     venue.canonicalName,
     ...venue.aliases,
     ...(venue.acronyms ?? []),
     andAmpersandVariant(venue.canonicalName),
+    ...(CONTROLLED_CCF_NAME_VARIANTS.get(
+      normalizeVenueName(venue.canonicalName),
+    ) ?? []),
   ].filter((candidate): candidate is string => Boolean(candidate));
   for (const candidate of candidates) {
     const matched = selectSameType(
@@ -92,6 +115,12 @@ function findCcfVenue(
       venue.type,
     );
     if (matched) return matched;
+  }
+  const looseCandidates = looseTypeIndex.get(
+    looseTypeNameKey(venue.type, venue.canonicalName),
+  );
+  if (looseCandidates?.length === 1) {
+    return looseCandidates[0];
   }
   return undefined;
 }
@@ -118,6 +147,13 @@ function selectSameType(
 
 function typeNameKey(venue: VenueRecord): string {
   return `${venue.type}\u0000${normalizeVenueName(venue.canonicalName)}`;
+}
+
+function looseTypeNameKey(
+  type: VenueRecord['type'],
+  name: string,
+): string {
+  return `${type}\u0000${normalizeVenueName(name).replace(/[^\p{L}\p{N}]+/gu, '')}`;
 }
 
 function cloneVenue(venue: VenueRecord): VenueRecord {

@@ -2,9 +2,12 @@ export type VenueType = 'journal' | 'conference';
 export type CcfRank = 'A' | 'B' | 'C';
 export type CasQuartile = '1' | '2' | '3' | '4';
 export type VenueLabelKind =
+  | 'cas-upgraded'
   | 'cas-discipline'
+  | 'jcr-quartile'
   | 'new-rising'
   | 'indexing'
+  | 'sjr'
   | 'publication-type'
   | 'warning'
   | 'note';
