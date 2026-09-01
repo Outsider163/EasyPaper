@@ -95,6 +95,59 @@ input[type="checkbox"] {
   font-weight: 700;
 }
 
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.metadata-grid > div {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.metadata-grid span,
+.metadata-grid strong {
+  display: block;
+}
+
+.metadata-grid span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.metadata-grid strong {
+  overflow: hidden;
+  margin-top: 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-setting {
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.inline-status {
+  margin: 0;
+}
+
+.license-note {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
 .privacy-note {
   margin-top: 18px;
   padding: 12px 14px;
@@ -243,6 +296,10 @@ code {
 
   .card {
     padding: 18px;
+  }
+
+  .metadata-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .section-heading,

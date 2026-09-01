@@ -2,12 +2,14 @@ import { browser } from 'wxt/browser';
 
 export interface ExtensionSettings {
   enabled: boolean;
+  autoCatalogUpdates: boolean;
 }
 
 const SETTINGS_KEY = 'settings';
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   enabled: true,
+  autoCatalogUpdates: false,
 };
 
 export async function loadSettings(): Promise<ExtensionSettings> {
@@ -16,6 +18,8 @@ export async function loadSettings(): Promise<ExtensionSettings> {
 
   return {
     enabled: settings?.enabled ?? DEFAULT_SETTINGS.enabled,
+    autoCatalogUpdates:
+      settings?.autoCatalogUpdates ?? DEFAULT_SETTINGS.autoCatalogUpdates,
   };
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "easypaper",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "A local-first browser extension for displaying academic venue rankings.",
@@ -11,6 +11,7 @@
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
+    "catalog:build": "vite-node scripts/build-public-catalog.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "compile": "tsc --noEmit",

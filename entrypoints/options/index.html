@@ -11,7 +11,7 @@
       <header>
         <p class="eyebrow">EASYPAPER</p>
         <h1>扩展设置</h1>
-        <p class="subtitle">自动识别论文来源，并显示你的本地期刊评价指标。</p>
+        <p class="subtitle">自动识别论文来源，在线更新公开目录，也支持你的本地数据。</p>
       </header>
 
       <form id="settings-form" class="card">
@@ -36,17 +36,53 @@
         </div>
       </form>
 
+
+      <section class="card catalog-card" aria-labelledby="remote-catalog-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="remote-catalog-title">在线公开目录</h2>
+            <p>安装后自动下载公开且允许分发的目录，并在浏览器中缓存。</p>
+          </div>
+          <span id="remote-version-badge" class="count-badge">未安装</span>
+        </div>
+
+        <div class="metadata-grid" aria-label="在线目录状态">
+          <div><span>当前来源</span><strong id="remote-source">正在读取…</strong></div>
+          <div><span>目录版本</span><strong id="remote-version">—</strong></div>
+          <div><span>记录数量</span><strong id="remote-records">0 条</strong></div>
+          <div><span>安装时间</span><strong id="remote-updated-at">—</strong></div>
+        </div>
+
+        <label class="setting-row compact-setting">
+          <span>
+            <strong>自动检查在线目录更新</strong>
+            <small>每 12 小时最多检查一次；已有旧版手动目录不会被自动覆盖。</small>
+          </span>
+          <input id="auto-catalog-updates" type="checkbox" />
+        </label>
+
+        <div class="actions">
+          <button id="update-remote-catalog" type="button">使用在线目录并立即更新</button>
+          <span id="remote-catalog-status" class="status inline-status" role="status" aria-live="polite"></span>
+        </div>
+
+        <div class="license-note">
+          当前在线版只发布 CCF 与云南财经大学等公开核心目录。中科院、JCR、SJR
+          等授权不明确的数据不会擅自公开；需要时仍可在下方手动导入。
+        </div>
+      </section>
+
       <section class="card catalog-card" aria-labelledby="catalog-title">
         <div class="section-heading">
           <div>
-            <h2 id="catalog-title">本地期刊目录</h2>
-            <p>上传 CSV、TSV 或 JSON，补充中科院升级版、JCR、CCF、影响因子、新锐分区、SJR、检索数据库和学校等级。</p>
+            <h2 id="catalog-title">当前补充目录与本地导入</h2>
+            <p>查看当前目录，或上传 CSV、TSV、JSON 替换在线缓存。</p>
           </div>
           <span id="catalog-count" class="count-badge">0 条</span>
         </div>
 
         <div class="privacy-note">
-          文件只在当前浏览器中解析并保存，不会上传到服务器。影响因子必须同时填写年份。
+          手动文件只在当前浏览器中解析和保存，不会上传服务器。手动导入后会自动关闭在线更新，避免覆盖你的数据；影响因子必须同时填写年份。
         </div>
 
         <label class="file-picker" for="catalog-file">

@@ -87,16 +87,17 @@ export function parseVenueCatalog(
       throw new Error(`第 ${rowNumber} 行缺少“期刊名称/名称”。`);
     }
 
+    const type = parseVenueType(row.type, rowNumber);
     const normalizedName = normalizeVenueName(name);
-    const firstRow = seenNames.get(normalizedName);
+    const nameKey = `${type}\u0000${normalizedName}`;
+    const firstRow = seenNames.get(nameKey);
     if (firstRow !== undefined) {
       throw new Error(
-        `第 ${rowNumber} 行与第 ${firstRow} 行的名称重复：${name}`,
+        `第 ${rowNumber} 行与第 ${firstRow} 行的同类型名称重复：${name}`,
       );
     }
-    seenNames.set(normalizedName, rowNumber);
+    seenNames.set(nameKey, rowNumber);
 
-    const type = parseVenueType(row.type, rowNumber);
     const aliases = splitList(row.aliases).filter(
       (alias) => normalizeVenueName(alias) !== normalizedName,
     );
