@@ -5,7 +5,7 @@
   "generatedAt": "2026-09-01T13:30:00.000Z",
   "dataUrl": "./public-catalog.csv?v=2026-core.1",
   "fileName": "public-catalog.csv",
-  "sha256": "17af40f676305d15266107ae19735c46365bc35bac45ac5e1ddbfa4856949e83",
-  "byteLength": 156095,
+  "sha256": "3622f1804380565ae736cad093c70b4682f87118dbedb632c0221583f2acfe9e",
+  "byteLength": 154532,
   "recordCount": 1563
 }

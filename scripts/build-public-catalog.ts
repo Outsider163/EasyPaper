@@ -34,7 +34,7 @@ const escapeCsv = (value: string): string =>
   /[",\r\n]/u.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
 const csv = [headers, ...rows]
   .map((row) => row.map(escapeCsv).join(','))
-  .join('\r\n');
+  .join('\n');
 const bytes = new TextEncoder().encode(csv);
 const sha256 = createHash('sha256').update(bytes).digest('hex');
 const manifest = {
