@@ -10,6 +10,9 @@ export type RankingBadgeKind =
   | 'jcr-quartile'
   | 'new-rising'
   | 'indexing'
+  | 'pku-core'
+  | 'cssci'
+  | 'cstpcd'
   | 'impact-factor'
   | 'school'
   | 'sjr'
@@ -46,11 +49,17 @@ export function buildRankingBadges(
     return badges;
   }
   const supplemental = matchedVenue.labels ?? [];
+  if (matchedVenue.ccf) {
+    badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank}` });
+  }
   appendLabels(badges, supplemental, [
     'new-rising',
     'cas-upgraded',
     'cas-discipline',
     'jcr-quartile',
+    'pku-core',
+    'cssci',
+    'cstpcd',
     'indexing',
   ]);
 
@@ -60,9 +69,6 @@ export function buildRankingBadges(
   );
   if (matchedVenue.cas && !hasDetailedCasLabel) {
     badges.push({ kind: 'cas', text: `中科院 ${matchedVenue.cas.rank}区` });
-  }
-  if (matchedVenue.ccf) {
-    badges.push({ kind: 'ccf', text: `CCF ${matchedVenue.ccf.rank}` });
   }
   if (matchedVenue.impactFactor) {
     badges.push({
@@ -176,6 +182,27 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       font-weight: 700;
     }
 
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="pku-core"] {
+      border-color: #f3a7a3;
+      background: #fff0ef;
+      color: #a61b1b;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cssci"] {
+      border-color: #d7a8ef;
+      background: #f8edff;
+      color: #7e22a8;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cstpcd"] {
+      border-color: #80c7b7;
+      background: #e7f7f2;
+      color: #0f6b5c;
+      font-weight: 700;
+    }
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="sjr"] {
       border-color: #9ec5fe;
       background: #e8f0fe;
@@ -273,12 +300,46 @@ function formatVenueLabel(label: VenueLabel): string {
   if (label.kind === 'cas-upgraded') return `SCI升级版 ${label.text}`;
   if (label.kind === 'cas-discipline') return `中科院 ${label.text}`;
   if (label.kind === 'jcr-quartile') return `JCR ${label.text}`;
+  if (label.kind === 'pku-core') {
+    return formatCoreLabel('北大中文核心', label.text, ['北大核心']);
+  }
+  if (label.kind === 'cssci') {
+    return formatCoreLabel('南大中文核心', label.text, ['南大核心', 'CSSCI']);
+  }
+  if (label.kind === 'cstpcd') {
+    return formatCoreLabel('中国科技核心', label.text, ['科技核心', 'CSTPCD']);
+  }
   if (label.kind === 'warning') return `预警 ${label.text}`;
   return label.text;
 }
 
 function editionText(edition: string | undefined): string {
   return edition ? `（${edition}）` : '';
+}
+
+function formatCoreLabel(
+  name: string,
+  text: string,
+  aliases: readonly string[],
+): string {
+  const normalized = text.normalize('NFKC').trim().toLowerCase();
+  if (
+    [
+      '是',
+      '1',
+      'true',
+      'yes',
+      'y',
+      '√',
+      '收录',
+      '已收录',
+      name,
+      ...aliases,
+    ].some((value) => value.normalize('NFKC').trim().toLowerCase() === normalized)
+  ) {
+    return name;
+  }
+  return `${name} ${text}`;
 }
 
 function formatNumber(value: number): string {

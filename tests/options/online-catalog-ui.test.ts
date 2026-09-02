@@ -22,5 +22,8 @@ describe('online catalog settings UI', () => {
     }
     expect(document.body.textContent).toContain('在线服务器目录');
     expect(document.body.textContent).toContain('不会被自动覆盖');
+    expect(document.body.textContent).toContain('北大中文核心标签');
+    expect(document.body.textContent).toContain('南大中文核心标签');
+    expect(document.body.textContent).toContain('中国科技核心标签');
   });
 });

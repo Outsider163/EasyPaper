@@ -41,6 +41,9 @@ const HEADER_ALIASES = {
   newRisingLabels: ['newrisinglabels', '新锐分区标签', '新锐标签'],
   newRisingEdition: ['newrisingedition', '新锐版本', '新锐年份'],
   indexingLabels: ['indexinglabels', '检索标签', '数据库标签', '收录标签'],
+  pkuCoreLabels: ['pkucorelabels', '北大中文核心标签', '北大核心标签', '北大中文核心', '北大核心'],
+  cssciLabels: ['csscilabels', '南大中文核心标签', '南大核心标签', 'cssci标签', '南大中文核心', '南大核心', 'cssci'],
+  cstpcdLabels: ['cstpcdlabels', '中国科技核心标签', '科技核心标签', '中国科技核心', '科技核心', 'cstpcd'],
   sjrLabels: ['sjrlabels', 'sjr标签', 'scimago标签', '计量指标标签'],
   publicationTypeLabels: ['publicationtypelabels', '期刊类型标签'],
   warningLabels: ['warninglabels', '预警标签', '预警标记'],
@@ -154,6 +157,9 @@ export const CATALOG_CSV_HEADERS = [
   '新锐分区标签',
   '新锐版本',
   '检索标签',
+  '北大中文核心标签',
+  '南大中文核心标签',
+  '中国科技核心标签',
   'SJR标签',
   '期刊类型标签',
   '预警标签',
@@ -185,6 +191,9 @@ export const CATALOG_CSV_TEMPLATE = [
     '计算机科学 1区|计算机科学 TOP',
     '2026',
     'SCIE|Scopus',
+    '2023版',
+    'CSSCI',
+    '2024版',
     'SJR 3.2（2025）|SJR Q1|H-index 120',
     'Review',
     '',
@@ -250,6 +259,9 @@ function serializeVenueRecord(record: VenueRecord): string[] {
     labels('new-rising'),
     firstLabelEdition('new-rising') ?? '',
     labels('indexing'),
+    labels('pku-core'),
+    labels('cssci'),
+    labels('cstpcd'),
     labels('sjr'),
     labels('publication-type'),
     labels('warning'),
@@ -482,13 +494,21 @@ function parseVenueLabels(
       edition: readString(row.newRisingEdition),
     },
     { field: 'indexingLabels', kind: 'indexing' },
+    { field: 'pkuCoreLabels', kind: 'pku-core' },
+    { field: 'cssciLabels', kind: 'cssci' },
+    { field: 'cstpcdLabels', kind: 'cstpcd' },
     { field: 'sjrLabels', kind: 'sjr' },
     { field: 'publicationTypeLabels', kind: 'publication-type' },
     { field: 'warningLabels', kind: 'warning' },
     { field: 'noteLabels', kind: 'note' },
   ];
   const labels = definitions.flatMap(({ field, kind, edition }) =>
-    splitList(row[field]).map((text) => ({ kind, text, edition })),
+    splitList(row[field]).flatMap((text) => {
+      const normalizedText = normalizeCoreLabelText(kind, text);
+      return normalizedText
+        ? [{ kind, text: normalizedText, edition }]
+        : [];
+    }),
   );
   const seen = new Set<string>();
   return labels.filter((label) => {
@@ -499,6 +519,69 @@ function parseVenueLabels(
     seen.add(key);
     return true;
   });
+}
+
+type CoreLabelKind = Extract<
+  VenueLabel['kind'],
+  'pku-core' | 'cssci' | 'cstpcd'
+>;
+
+const CORE_LABEL_CANONICAL_TEXT: Record<CoreLabelKind, string> = {
+  'pku-core': '北大中文核心',
+  cssci: 'CSSCI',
+  cstpcd: 'CSTPCD',
+};
+
+const CORE_LABEL_ALIASES: Record<CoreLabelKind, readonly string[]> = {
+  'pku-core': ['北大中文核心', '北大核心'],
+  cssci: ['cssci', '南大中文核心', '南大核心'],
+  cstpcd: ['cstpcd', '中国科技核心', '科技核心'],
+};
+
+const CORE_LABEL_POSITIVE_VALUES = [
+  '是',
+  '1',
+  'true',
+  'yes',
+  'y',
+  '√',
+  '收录',
+  '已收录',
+] as const;
+
+const CORE_LABEL_NEGATIVE_VALUES = [
+  '否', '0', 'false', 'no', 'n', '×', '无', 'n/a', 'na', '-', '—',
+  'none', 'null', '不适用', '未收录', '不收录', '非核心', '不是', '未入选',
+] as const;
+
+function normalizeCoreLabelText(
+  kind: VenueLabel['kind'],
+  text: string,
+): string | undefined {
+  if (!['pku-core', 'cssci', 'cstpcd'].includes(kind)) {
+    return text;
+  }
+  const coreKind = kind as CoreLabelKind;
+  const normalized = text.normalize('NFKC').trim().toLowerCase();
+  if (
+    CORE_LABEL_NEGATIVE_VALUES.includes(
+      normalized as (typeof CORE_LABEL_NEGATIVE_VALUES)[number],
+    ) ||
+    /^(?:非|不是|不属于|未(?:被)?).*(?:核心|cssci|cstpcd|收录)/iu.test(
+      normalized,
+    )
+  ) {
+    return undefined;
+  }
+  if (
+    CORE_LABEL_POSITIVE_VALUES.includes(
+      normalized as (typeof CORE_LABEL_POSITIVE_VALUES)[number],
+    ) ||
+    CORE_LABEL_ALIASES[coreKind].includes(normalized)
+  ) {
+    return CORE_LABEL_CANONICAL_TEXT[coreKind];
+  }
+  return text;
 }
 
 function splitList(value: unknown): string[] {

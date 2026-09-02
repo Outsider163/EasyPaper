@@ -11,8 +11,8 @@ describe('remote catalog download safety', () => {
     const manifestUrl = 'https://example.test/catalog/manifest.json';
     const dataUrl = 'https://example.test/catalog/catalog.csv';
     const dataText = [
-      '期刊名称,CCF级别,CCF版本',
-      'Journal of Remote Tests,A,2026',
+      '期刊名称,CCF级别,CCF版本,北大中文核心标签,南大中文核心标签,中国科技核心标签',
+      'Journal of Remote Tests,A,2026,2023版,CSSCI,CSTPCD',
     ].join('\n');
     const dataBytes = new TextEncoder().encode(dataText);
     const manifest = {
@@ -45,6 +45,11 @@ describe('remote catalog download safety', () => {
       expect.objectContaining({
         canonicalName: 'Journal of Remote Tests',
         ccf: expect.objectContaining({ rank: 'A', edition: '2026' }),
+        labels: expect.arrayContaining([
+          expect.objectContaining({ kind: 'pku-core', text: '2023版' }),
+          expect.objectContaining({ kind: 'cssci', text: 'CSSCI' }),
+          expect.objectContaining({ kind: 'cstpcd', text: 'CSTPCD' }),
+        ]),
       }),
     ]);
   });

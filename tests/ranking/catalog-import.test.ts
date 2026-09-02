@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { buildRankingBadges } from '../../src/ranking/badges';
+import {
+  buildRankingBadges,
+  buildRankingTooltip,
+} from '../../src/ranking/badges';
 import { parseVenueCatalog } from '../../src/ranking/catalog-import';
 import { BUNDLED_CATALOG_STATS } from '../../src/ranking/data/bundled';
 import {
@@ -110,6 +113,64 @@ describe('user venue catalog import', () => {
     });
   });
 
+  it('renders CCF-A/B/C and only affirmative Chinese core labels', () => {
+    const result = parseVenueCatalog(
+      [
+        '期刊名称,CCF级别,北大中文核心,南大中文核心,中国科技核心,检索标签',
+        'Core Example A,A,是|北大中文核心,CSSCI|是,CSTPCD|收录,SCIE|Scopus',
+        'Core Example B,B,2023版,南大中文核心,2024版,SCIE',
+        'Core Example C,C,否|无|N/A|-|非北大中文核心,false|不是CSSCI来源期刊,未收录|非中国科技核心,',
+      ].join('\n'),
+      'chinese-core.csv',
+    );
+
+    expect(result.warnings).toEqual([]);
+    setUserVenueCatalog(result.records);
+
+    const matches = ['A', 'B', 'C'].map((rank) =>
+      ccf2026SeedMatcher.match({ candidate: `Core Example ${rank}` }),
+    );
+    expect(
+      matches.map(
+        (match) =>
+          buildRankingBadges(match, undefined).find(
+            (badge) => badge.kind === 'ccf',
+          )?.text,
+      ),
+    ).toEqual(['CCF-A', 'CCF-B', 'CCF-C']);
+
+    expect(buildRankingBadges(matches[0]!, 'Core Example A')).toEqual([
+      { kind: 'source', text: 'EasyPaper · 来源：Core Example A' },
+      { kind: 'ccf', text: 'CCF-A' },
+      { kind: 'pku-core', text: '北大中文核心' },
+      { kind: 'cssci', text: '南大中文核心' },
+      { kind: 'cstpcd', text: '中国科技核心' },
+      { kind: 'indexing', text: 'SCIE' },
+      { kind: 'indexing', text: 'Scopus' },
+    ]);
+    expect(buildRankingBadges(matches[1]!, 'Core Example B')).toEqual([
+      { kind: 'source', text: 'EasyPaper · 来源：Core Example B' },
+      { kind: 'ccf', text: 'CCF-B' },
+      { kind: 'pku-core', text: '北大中文核心 2023版' },
+      { kind: 'cssci', text: '南大中文核心' },
+      { kind: 'cstpcd', text: '中国科技核心 2024版' },
+      { kind: 'indexing', text: 'SCIE' },
+    ]);
+    expect(buildRankingBadges(matches[2]!, 'Core Example C')).toEqual([
+      { kind: 'source', text: 'EasyPaper · 来源：Core Example C' },
+      { kind: 'ccf', text: 'CCF-C' },
+    ]);
+
+    const tooltip = buildRankingTooltip(
+      '测试页',
+      matches[0]!,
+      'Core Example A',
+    );
+    expect(tooltip).toContain('北大中文核心');
+    expect(tooltip).toContain('南大中文核心');
+    expect(tooltip).toContain('中国科技核心');
+  });
+
   it('rejects impact factors without a four-digit data year', () => {
     expect(() =>
       parseVenueCatalog('期刊名称,影响因子\n示例期刊,3.2', 'invalid.csv'),
@@ -153,8 +214,8 @@ describe('active catalog and badges', () => {
 
     expect(buildRankingBadges(match, 'NeurIPS')).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：NeurIPS' },
+      { kind: 'ccf', text: 'CCF-A' },
       { kind: 'cas', text: '中科院 1区' },
-      { kind: 'ccf', text: 'CCF A' },
       { kind: 'impact-factor', text: 'IF 33.1（2025）' },
       { kind: 'school', text: '示例大学 A+' },
     ]);

@@ -103,7 +103,7 @@ describe('CNKI decoration', () => {
     expect(
       panels.item(0).querySelector(`[${RANKING_BADGE_ATTRIBUTE}="ccf"]`)
         ?.textContent,
-    ).toBe('CCF A');
+    ).toBe('CCF-A');
     expect(panels.item(0).getAttribute(CNKI_CCF_RANK_ATTRIBUTE)).toBe('A');
     expect(panels.item(1).textContent).toBe('EasyPaper · 来源：情报科学');
     expect(
@@ -116,7 +116,7 @@ describe('CNKI decoration', () => {
 
   it('renders uploaded CAS, impact-factor, and school badges end to end', () => {
     const imported = parseVenueCatalog(
-      '期刊名称,中科院分区,中科院版本,影响因子,影响因子年份,学校等级,学校名称\n情报科学,2区,2025,4.2,2025,A,示例大学',
+      '期刊名称,中科院分区,中科院版本,影响因子,影响因子年份,学校等级,学校名称,北大中文核心标签,南大中文核心标签,中国科技核心标签\n情报科学,2区,2025,4.2,2025,A,示例大学,是,CSSCI,CSTPCD',
       'journals.csv',
     );
     setUserVenueCatalog(imported.records);
@@ -136,6 +136,15 @@ describe('CNKI decoration', () => {
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="school"]`)?.textContent,
     ).toBe('示例大学 A');
+    expect(
+      panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="pku-core"]`)?.textContent,
+    ).toBe('北大中文核心');
+    expect(
+      panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="cssci"]`)?.textContent,
+    ).toBe('南大中文核心');
+    expect(
+      panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="cstpcd"]`)?.textContent,
+    ).toBe('中国科技核心');
   });
 
   it('decorates a detail page from citation metadata', () => {
@@ -147,7 +156,7 @@ describe('CNKI decoration', () => {
     );
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="ccf"]`)?.textContent,
-    ).toBe('CCF A');
+    ).toBe('CCF-A');
     expect(panel?.previousElementSibling?.tagName).toBe('H1');
   });
 

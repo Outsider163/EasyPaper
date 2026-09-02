@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CATALOG_CSV_HEADERS,
   parseVenueCatalog,
   serializeVenueCatalog,
 } from '../../src/ranking/catalog-import';
@@ -31,6 +32,9 @@ describe('catalog export', () => {
           { kind: 'jcr-quartile', text: '信息系统 Q1（1/266）', edition: '2025' },
           { kind: 'new-rising', text: '计算机科学 1区', edition: '2026' },
           { kind: 'indexing', text: 'SCIE' },
+          { kind: 'pku-core', text: '2023版' },
+          { kind: 'cssci', text: 'CSSCI' },
+          { kind: 'cstpcd', text: 'CSTPCD' },
           { kind: 'sjr', text: 'SJR Q1' },
           { kind: 'publication-type', text: 'Review' },
           { kind: 'warning', text: '预警' },
@@ -40,6 +44,10 @@ describe('catalog export', () => {
     ];
 
     const csv = serializeVenueCatalog(records);
+    expect(csv.split('\n')[0]).toBe(CATALOG_CSV_HEADERS.join(','));
+    expect(csv.split('\n')[0]).toContain(
+      '检索标签,北大中文核心标签,南大中文核心标签,中国科技核心标签,SJR标签',
+    );
     const result = parseVenueCatalog(csv, 'export.csv');
 
     expect(result.warnings).toEqual([]);
