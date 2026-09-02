@@ -113,7 +113,7 @@ describe('user venue catalog import', () => {
     });
   });
 
-  it('renders CCF-A/B/C and only affirmative Chinese core labels', () => {
+  it('renders CCF-A/B/C recommendations and only affirmative Chinese core labels', () => {
     const result = parseVenueCatalog(
       [
         '期刊名称,CCF级别,北大中文核心,南大中文核心,中国科技核心,检索标签',
@@ -137,11 +137,11 @@ describe('user venue catalog import', () => {
             (badge) => badge.kind === 'ccf',
           )?.text,
       ),
-    ).toEqual(['CCF-A', 'CCF-B', 'CCF-C']);
+    ).toEqual(['CCF-A 类推荐', 'CCF-B 类推荐', 'CCF-C 类推荐']);
 
     expect(buildRankingBadges(matches[0]!, 'Core Example A')).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：Core Example A' },
-      { kind: 'ccf', text: 'CCF-A' },
+      { kind: 'ccf', text: 'CCF-A 类推荐' },
       { kind: 'pku-core', text: '北大中文核心' },
       { kind: 'cssci', text: '南大中文核心' },
       { kind: 'cstpcd', text: '中国科技核心' },
@@ -150,7 +150,7 @@ describe('user venue catalog import', () => {
     ]);
     expect(buildRankingBadges(matches[1]!, 'Core Example B')).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：Core Example B' },
-      { kind: 'ccf', text: 'CCF-B' },
+      { kind: 'ccf', text: 'CCF-B 类推荐' },
       { kind: 'pku-core', text: '北大中文核心 2023版' },
       { kind: 'cssci', text: '南大中文核心' },
       { kind: 'cstpcd', text: '中国科技核心 2024版' },
@@ -158,7 +158,7 @@ describe('user venue catalog import', () => {
     ]);
     expect(buildRankingBadges(matches[2]!, 'Core Example C')).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：Core Example C' },
-      { kind: 'ccf', text: 'CCF-C' },
+      { kind: 'ccf', text: 'CCF-C 类推荐' },
     ]);
 
     const tooltip = buildRankingTooltip(
@@ -214,7 +214,7 @@ describe('active catalog and badges', () => {
 
     expect(buildRankingBadges(match, 'NeurIPS')).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：NeurIPS' },
-      { kind: 'ccf', text: 'CCF-A' },
+      { kind: 'ccf', text: 'CCF-A 类推荐' },
       { kind: 'cas', text: '中科院 1区' },
       { kind: 'impact-factor', text: 'IF 33.1（2025）' },
       { kind: 'school', text: '示例大学 A+' },

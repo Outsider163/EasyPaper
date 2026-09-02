@@ -54,7 +54,7 @@ export function buildRankingBadges(
   }
   const supplemental = matchedVenue.labels ?? [];
   if (matchedVenue.ccf) {
-    badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank}` });
+    badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank} 类推荐` });
   }
   appendLabels(badges, supplemental, [
     'new-rising',

@@ -1,6 +1,6 @@
 {
   "name": "easypaper",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "private": true,
   "type": "module",
   "description": "A local-first browser extension for displaying academic venue rankings.",

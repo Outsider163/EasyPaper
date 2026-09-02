@@ -29,7 +29,7 @@ describe('Google Scholar ranking decoration', () => {
     );
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="ccf"]`)?.textContent,
-    ).toBe('CCF-A');
+    ).toBe('CCF-A 类推荐');
     expect(panel?.getAttribute(SCHOLAR_CCF_RANK_ATTRIBUTE)).toBe('A');
     expect(panel?.getAttribute('data-easypaper-match-confidence')).toBe('high');
     expect(panel?.title).toContain(
