@@ -12,7 +12,11 @@ export type RankingBadgeKind =
   | 'indexing'
   | 'pku-core'
   | 'cssci'
+  | 'cssci-extended'
   | 'cstpcd'
+  | 'cscd-core'
+  | 'cscd-extended'
+  | 'cast-tier'
   | 'impact-factor'
   | 'school'
   | 'sjr'
@@ -59,7 +63,11 @@ export function buildRankingBadges(
     'jcr-quartile',
     'pku-core',
     'cssci',
+    'cssci-extended',
     'cstpcd',
+    'cscd-core',
+    'cscd-extended',
+    'cast-tier',
     'indexing',
   ]);
 
@@ -182,6 +190,13 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       font-weight: 700;
     }
 
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cssci-extended"] {
+      border-color: #d7a8ef;
+      background: #faf2ff;
+      color: #7e22a8;
+      font-weight: 700;
+    }
+
 
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="pku-core"] {
       border-color: #f3a7a3;
@@ -201,6 +216,27 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       border-color: #80c7b7;
       background: #e7f7f2;
       color: #0f6b5c;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cscd-core"] {
+      border-color: #75b7c7;
+      background: #e7f6fa;
+      color: #075f73;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cscd-extended"] {
+      border-color: #9cc9d3;
+      background: #f0f8fa;
+      color: #276675;
+      font-weight: 700;
+    }
+
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cast-tier"] {
+      border-color: #efb36c;
+      background: #fff3df;
+      color: #8a4b00;
       font-weight: 700;
     }
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="sjr"] {
@@ -306,9 +342,19 @@ function formatVenueLabel(label: VenueLabel): string {
   if (label.kind === 'cssci') {
     return formatCoreLabel('南大中文核心', label.text, ['南大核心', 'CSSCI']);
   }
+  if (label.kind === 'cssci-extended') {
+    return formatCoreLabel('CSSCI扩展版', label.text, ['CSSCI扩展']);
+  }
   if (label.kind === 'cstpcd') {
     return formatCoreLabel('中国科技核心', label.text, ['科技核心', 'CSTPCD']);
   }
+  if (label.kind === 'cscd-core') {
+    return formatCoreLabel('CSCD核心库', label.text, ['CSCD核心']);
+  }
+  if (label.kind === 'cscd-extended') {
+    return formatCoreLabel('CSCD扩展库', label.text, ['CSCD扩展']);
+  }
+  if (label.kind === 'cast-tier') return `中国科协 ${label.text}`;
   if (label.kind === 'warning') return `预警 ${label.text}`;
   return label.text;
 }

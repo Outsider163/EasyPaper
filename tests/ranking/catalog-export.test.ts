@@ -34,7 +34,11 @@ describe('catalog export', () => {
           { kind: 'indexing', text: 'SCIE' },
           { kind: 'pku-core', text: '2023版' },
           { kind: 'cssci', text: 'CSSCI' },
+          { kind: 'cssci-extended', text: '2025-2026' },
           { kind: 'cstpcd', text: 'CSTPCD' },
+          { kind: 'cscd-core', text: '2025-2026' },
+          { kind: 'cscd-extended', text: '2025-2026' },
+          { kind: 'cast-tier', text: '计算机 T1（2025总汇）' },
           { kind: 'sjr', text: 'SJR Q1' },
           { kind: 'publication-type', text: 'Review' },
           { kind: 'warning', text: '预警' },
@@ -46,7 +50,7 @@ describe('catalog export', () => {
     const csv = serializeVenueCatalog(records);
     expect(csv.split('\n')[0]).toBe(CATALOG_CSV_HEADERS.join(','));
     expect(csv.split('\n')[0]).toContain(
-      '检索标签,北大中文核心标签,南大中文核心标签,中国科技核心标签,SJR标签',
+      '南大中文核心标签,CSSCI扩展版标签,中国科技核心标签,CSCD核心库标签,CSCD扩展库标签,中国科协高质量期刊标签',
     );
     const result = parseVenueCatalog(csv, 'export.csv');
 

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "2026-core.1",
-  "label": "CCF 第七版 + 云南财经大学 2026 公开核心目录",
-  "generatedAt": "2026-09-01T13:30:00.000Z",
-  "dataUrl": "./public-catalog.csv?v=2026-core.1",
+  "catalogVersion": "2025-2026-full.5",
+  "label": "EasyPaper 2025-2026 中文核心与科协目录",
+  "generatedAt": "2026-09-02T07:12:42.469Z",
+  "dataUrl": "./public-catalog.csv?v=2025-2026-full.5",
   "fileName": "public-catalog.csv",
-  "sha256": "3622f1804380565ae736cad093c70b4682f87118dbedb632c0221583f2acfe9e",
-  "byteLength": 154532,
-  "recordCount": 1563
+  "sha256": "74ca1c6e0dbcc28cff5d9ec71e8314a1f19ca93eba6741dc263d9a8fcf196bcc",
+  "byteLength": 945703,
+  "recordCount": 8184
 }

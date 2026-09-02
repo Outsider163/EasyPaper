@@ -1,0 +1,111 @@
+{
+  "recordCount": 7184,
+  "inputCounts": {
+    "cscd": 1504,
+    "pku": 1987,
+    "cssci_source": 674,
+    "cssci_extended": 261,
+    "cstpcd": 2693,
+    "cstpcd_popular": 52,
+    "cast_verified_before_name_filter": 6285,
+    "cast": 6250
+  },
+  "labelRecordCounts": {
+    "北大中文核心标签": 1986,
+    "南大中文核心标签": 674,
+    "CSSCI扩展版标签": 261,
+    "中国科技核心标签": 2740,
+    "CSCD核心库标签": 1111,
+    "CSCD扩展库标签": 384,
+    "中国科协高质量期刊标签": 4922
+  },
+  "castVerifiedFieldCount": 42,
+  "castTruncatedNamesExcluded": 35,
+  "castExcludedFields": [
+    {
+      "field": "地球科学",
+      "expected": 642,
+      "extracted": 644
+    },
+    {
+      "field": "机械工程",
+      "expected": 141,
+      "extracted": 136
+    },
+    {
+      "field": "建筑科学",
+      "expected": 120,
+      "extracted": 0
+    },
+    {
+      "field": "地理资源",
+      "expected": 368,
+      "extracted": 451
+    },
+    {
+      "field": "材料失效与保护",
+      "expected": 102,
+      "extracted": 15
+    },
+    {
+      "field": "汽车工程",
+      "expected": 39,
+      "extracted": 24
+    },
+    {
+      "field": "数学",
+      "expected": 449,
+      "extracted": 0
+    },
+    {
+      "field": "材料-综合",
+      "expected": 410,
+      "extracted": 0
+    },
+    {
+      "field": "振动工程",
+      "expected": 87,
+      "extracted": 0
+    },
+    {
+      "field": "岩土力学与工程地质",
+      "expected": 129,
+      "extracted": 0
+    },
+    {
+      "field": "舰船科学",
+      "expected": 108,
+      "extracted": 0
+    },
+    {
+      "field": "光学工程和光学",
+      "expected": 88,
+      "extracted": 31
+    },
+    {
+      "field": "管理科学",
+      "expected": 1277,
+      "extracted": 1290
+    },
+    {
+      "field": "图像图形",
+      "expected": 195,
+      "extracted": 198
+    },
+    {
+      "field": "遥感科学与技术",
+      "expected": 140,
+      "extracted": 0
+    },
+    {
+      "field": "土壤学",
+      "expected": 175,
+      "extracted": 171
+    },
+    {
+      "field": "药学",
+      "expected": 225,
+      "extracted": 0
+    }
+  ]
+}
