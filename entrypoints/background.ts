@@ -1,4 +1,5 @@
 import { browser } from 'wxt/browser';
+import { loadCatalogMetadata, loadUserVenueCatalog } from '../src/ranking/catalog-storage';
 import { updateRemoteCatalog } from '../src/ranking/remote-catalog';
 import { loadSettings, saveSettings } from '../src/settings';
 
@@ -15,11 +16,18 @@ export default defineBackground(() => {
     });
   };
 
-  const runUpdate = (force = false): Promise<void> => {
-    if (activeUpdate) return activeUpdate;
+  const runUpdate = (
+    force = false,
+    bypassInterval = false,
+  ): Promise<void> => {
+    if (activeUpdate) {
+      return force || bypassInterval
+        ? activeUpdate.then(() => runUpdate(force, bypassInterval))
+        : activeUpdate;
+    }
     activeUpdate = (async () => {
       try {
-        const result = await updateRemoteCatalog({ force });
+        const result = await updateRemoteCatalog({ force, bypassInterval });
         console.info(`[EasyPaper] remote catalog: ${result.status}`);
       } catch (error) {
         console.warn('[EasyPaper] remote catalog update failed', error);
@@ -30,6 +38,24 @@ export default defineBackground(() => {
     return activeUpdate;
   };
 
+  const refreshAfterExtensionUpdate = async (): Promise<void> => {
+    const [settings, metadata, records] = await Promise.all([
+      loadSettings(),
+      loadCatalogMetadata(),
+      loadUserVenueCatalog(),
+    ]);
+    const hasProtectedManualCatalog =
+      metadata?.source === 'manual' || (!metadata && records.length > 0);
+    if (hasProtectedManualCatalog) {
+      console.info('[EasyPaper] manual catalog kept after extension update');
+      return;
+    }
+    if (!settings.autoCatalogUpdates) {
+      await saveSettings({ ...settings, autoCatalogUpdates: true });
+    }
+    await runUpdate(false, true);
+  };
+
   browser.runtime.onInstalled.addListener((details) => {
     void (async () => {
       await scheduleUpdates();
@@ -38,7 +64,7 @@ export default defineBackground(() => {
         await saveSettings({ ...settings, autoCatalogUpdates: true });
         await runUpdate(true);
       } else {
-        await runUpdate();
+        await refreshAfterExtensionUpdate();
       }
     })();
   });
@@ -64,4 +90,5 @@ export default defineBackground(() => {
   });
 
   void scheduleUpdates();
+  void runUpdate();
 });

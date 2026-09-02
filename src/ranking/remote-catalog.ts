@@ -11,10 +11,10 @@ import { downloadRemoteCatalog } from './remote-catalog-core';
 import { loadSettings, saveSettings } from '../settings';
 
 export const DEFAULT_REMOTE_CATALOG_MANIFEST_URL =
-  'https://cdn.jsdelivr.net/gh/Outsider163/EasyPaper@main/catalog/manifest.json';
+  'https://raw.githubusercontent.com/Outsider163/EasyPaper/main/catalog/manifest.json';
 export const REMOTE_CATALOG_MANIFEST_URLS = [
   DEFAULT_REMOTE_CATALOG_MANIFEST_URL,
-  'https://raw.githubusercontent.com/Outsider163/EasyPaper/main/catalog/manifest.json',
+  'https://cdn.jsdelivr.net/gh/Outsider163/EasyPaper@main/catalog/manifest.json',
 ] as const;
 export const REMOTE_CATALOG_CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000;
 
@@ -31,6 +31,7 @@ export interface RemoteCatalogUpdateResult {
 
 export interface RemoteCatalogUpdateOptions {
   force?: boolean;
+  bypassInterval?: boolean;
   fetcher?: typeof fetch;
   now?: Date;
   manifestUrl?: string;
@@ -40,6 +41,7 @@ export async function updateRemoteCatalog(
   options: RemoteCatalogUpdateOptions = {},
 ): Promise<RemoteCatalogUpdateResult> {
   const force = options.force ?? false;
+  const bypassInterval = options.bypassInterval ?? false;
   const now = options.now ?? new Date();
   const settings = await loadSettings();
   if (!force && !settings.autoCatalogUpdates) {
@@ -65,6 +67,7 @@ export async function updateRemoteCatalog(
 
   if (
     !force &&
+    !bypassInterval &&
     metadata?.source === 'remote' &&
     elapsedMilliseconds(metadata.lastCheckedAt, now) <
       REMOTE_CATALOG_CHECK_INTERVAL_MS

@@ -4,7 +4,7 @@ EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 
 
 当前版本内置 CCF 第七版目录和《云南财经大学学术期刊分级标准与目录（2026）》，支持服务器全量目录，也支持通过 CSV、TSV 或 JSON 补充自己的数据。
 
-> 当前版本为 `0.6.0`，在线目录新增北大核心、CSSCI 来源/扩展版、中国科技核心、CSCD 核心/扩展库及中国科协高质量期刊标签。
+> 当前版本为 `0.6.1`，修复旧版本升级后仍停留在旧在线目录的问题；在线目录包含北大核心、CSSCI 来源/扩展版、中国科技核心、CSCD 核心/扩展库及中国科协高质量期刊标签。
 
 ## 功能特性
 
@@ -61,7 +61,7 @@ EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 
 
 ### 方式一：下载测试版
 
-1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.6.0-chrome.zip`；
+1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.6.1-chrome.zip`；
 2. 将 ZIP 解压到一个固定目录；
 3. 在 Chrome 地址栏打开 `chrome://extensions/`；
 4. 打开右上角的“开发者模式”；
@@ -120,7 +120,7 @@ npm run build
 
 ## 在线服务器目录
 
-EasyPaper v0.6.0 使用 GitHub 仓库作为静态数据服务器：先读取 `catalog/manifest.json`，再下载 `catalog/public-catalog.csv`。首次安装会启用在线更新，以后每 12 小时最多检查一次。用户也可以在“扩展设置 → 在线服务器目录”中立即更新或关闭自动更新。
+EasyPaper v0.6.1 使用 GitHub 仓库作为静态数据服务器：先读取 `catalog/manifest.json`，再下载 `catalog/public-catalog.csv`。首次安装和从旧版升级时会立即获取最新目录，以后每 12 小时最多检查一次；用户手动导入的目录仍不会被覆盖。用户也可以在“扩展设置 → 在线服务器目录”中立即更新或关闭自动更新。
 
 清单包含目录版本、生成时间、记录数、字节数和 SHA256。任一校验失败时，插件会保留浏览器中的现有数据。当前服务器目录为 8,184 条合并记录；已安装的浏览器会自动切换到新版本，无需重新安装扩展。
 
