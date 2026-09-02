@@ -2,6 +2,7 @@ import {
   CATALOG_CSV_TEMPLATE,
   MAX_CATALOG_FILE_BYTES,
   parseVenueCatalog,
+  serializeVenueCatalog,
   type CatalogImportResult,
 } from '../../src/ranking/catalog-import';
 import {
@@ -41,6 +42,8 @@ async function initializeOptions(): Promise<void> {
   const importButton = document.querySelector<HTMLButtonElement>('#import-catalog');
   const downloadButton =
     document.querySelector<HTMLButtonElement>('#download-template');
+  const exportButton =
+    document.querySelector<HTMLButtonElement>('#export-catalog');
   const clearButton = document.querySelector<HTMLButtonElement>('#clear-catalog');
   const catalogStatus = document.querySelector<HTMLElement>('#catalog-status');
   const warnings = document.querySelector<HTMLUListElement>('#catalog-warnings');
@@ -146,15 +149,32 @@ async function initializeOptions(): Promise<void> {
   });
 
   downloadButton?.addEventListener('click', () => {
-    const blob = new Blob([`\uFEFF${CATALOG_CSV_TEMPLATE}`], {
-      type: 'text/csv;charset=utf-8',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'easypaper-journal-template.csv';
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadCsv(CATALOG_CSV_TEMPLATE, 'easypaper-journal-template.csv');
+  });
+
+  exportButton?.addEventListener('click', async () => {
+    exportButton.disabled = true;
+    try {
+      const records = await loadUserVenueCatalog();
+      if (records.length === 0) {
+        showStatus(catalogStatus, '当前没有可导出的补充目录。', 'error');
+        return;
+      }
+      const date = new Date().toISOString().slice(0, 10);
+      downloadCsv(
+        serializeVenueCatalog(records),
+        `EasyPaper-全标签-${date}.csv`,
+      );
+      showStatus(
+        catalogStatus,
+        `已导出 ${records.length} 条记录；可将文件交给仓库维护者发布为在线目录。`,
+        'success',
+      );
+    } catch (error) {
+      showStatus(catalogStatus, `导出失败：${errorMessage(error)}`, 'error');
+    } finally {
+      exportButton.disabled = false;
+    }
   });
 
   clearButton?.addEventListener('click', async () => {
@@ -209,7 +229,7 @@ function renderRemoteMetadata(metadata: CatalogMetadata | undefined): void {
 }
 
 function sourceText(source: CatalogMetadata['source']): string {
-  return source === 'remote' ? '在线公开目录' : '本地手动目录';
+  return source === 'remote' ? '在线服务器目录' : '本地手动目录';
 }
 
 function setText(selector: string, value: string): void {
@@ -321,6 +341,18 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function downloadCsv(csv: string, fileName: string): void {
+  const blob = new Blob([`\uFEFF${csv}`], {
+    type: 'text/csv;charset=utf-8',
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 void initializeOptions();

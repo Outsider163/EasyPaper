@@ -11,7 +11,7 @@
       <header>
         <p class="eyebrow">EASYPAPER</p>
         <h1>扩展设置</h1>
-        <p class="subtitle">自动识别论文来源，在线更新公开目录，也支持你的本地数据。</p>
+        <p class="subtitle">自动识别论文来源，通过 GitHub 服务器更新全量目录，也支持本地数据。</p>
       </header>
 
       <form id="settings-form" class="card">
@@ -40,8 +40,8 @@
       <section class="card catalog-card" aria-labelledby="remote-catalog-title">
         <div class="section-heading">
           <div>
-            <h2 id="remote-catalog-title">在线公开目录</h2>
-            <p>安装后自动下载公开且允许分发的目录，并在浏览器中缓存。</p>
+            <h2 id="remote-catalog-title">在线服务器目录</h2>
+            <p>安装后从 GitHub 下载带版本和校验值的目录，并在浏览器中缓存。</p>
           </div>
           <span id="remote-version-badge" class="count-badge">未安装</span>
         </div>
@@ -67,8 +67,8 @@
         </div>
 
         <div class="license-note">
-          当前在线版只发布 CCF 与云南财经大学等公开核心目录。中科院、JCR、SJR
-          等授权不明确的数据不会擅自公开；需要时仍可在下方手动导入。
+          服务器目录支持 CCF、学校、中科院、JCR、影响因子、新锐、SJR 等全部标签；
+          数据由仓库维护者统一验证并发布，浏览器无需重新安装即可获得更新。
         </div>
       </section>
 
@@ -82,7 +82,8 @@
         </div>
 
         <div class="privacy-note">
-          手动文件只在当前浏览器中解析和保存，不会上传服务器。手动导入后会自动关闭在线更新，避免覆盖你的数据；影响因子必须同时填写年份。
+          手动文件只在当前浏览器中解析和保存，不会自动上传服务器。你可以导出当前目录，
+          再交给仓库维护者发布；手动导入后会关闭在线更新，避免覆盖本地数据。
         </div>
 
         <label class="file-picker" for="catalog-file">
@@ -98,6 +99,7 @@
         <div class="actions catalog-actions">
           <button id="import-catalog" type="button" disabled>导入并替换目录</button>
           <button id="download-template" class="secondary" type="button">下载 CSV 模板</button>
+          <button id="export-catalog" class="secondary" type="button">导出当前全标签目录</button>
           <button id="clear-catalog" class="danger" type="button">清空已上传目录</button>
         </div>
 

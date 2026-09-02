@@ -1,0 +1,34 @@
+name: Verify catalog
+
+on:
+  push:
+    paths:
+      - "catalog/**"
+      - "scripts/**catalog*.ts"
+      - "src/ranking/catalog-*.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/catalog-check.yml"
+  pull_request:
+    paths:
+      - "catalog/**"
+      - "scripts/**catalog*.ts"
+      - "src/ranking/catalog-*.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/catalog-check.yml"
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run catalog:verify
+      - run: npm test
+      - run: npm run compile

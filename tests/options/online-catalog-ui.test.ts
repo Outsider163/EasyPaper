@@ -16,10 +16,11 @@ describe('online catalog settings UI', () => {
       'remote-version',
       'remote-records',
       'remote-updated-at',
+      'export-catalog',
     ]) {
       expect(document.getElementById(id), `missing #${id}`).not.toBeNull();
     }
-    expect(document.body.textContent).toContain('在线公开目录');
+    expect(document.body.textContent).toContain('在线服务器目录');
     expect(document.body.textContent).toContain('不会被自动覆盖');
   });
 });

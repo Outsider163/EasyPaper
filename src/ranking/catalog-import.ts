@@ -132,35 +132,37 @@ export function parseVenueCatalog(
   return { records, warnings };
 }
 
+export const CATALOG_CSV_HEADERS = [
+  '期刊名称',
+  '类型',
+  '别名',
+  '简称',
+  'ISSN',
+  '中科院分区',
+  '中科院版本',
+  'CCF级别',
+  'CCF版本',
+  '影响因子',
+  '影响因子年份',
+  '影响因子来源',
+  '学校等级',
+  '学校名称',
+  '学校版本',
+  '中科院学科标签',
+  '中科院升级版标签',
+  'JCR分区标签',
+  '新锐分区标签',
+  '新锐版本',
+  '检索标签',
+  'SJR标签',
+  '期刊类型标签',
+  '预警标签',
+  '其他标签',
+  '来源链接',
+] as const;
+
 export const CATALOG_CSV_TEMPLATE = [
-  [
-    '期刊名称',
-    '类型',
-    '别名',
-    '简称',
-    'ISSN',
-    '中科院分区',
-    '中科院版本',
-    'CCF级别',
-    'CCF版本',
-    '影响因子',
-    '影响因子年份',
-    '影响因子来源',
-    '学校等级',
-    '学校名称',
-    '学校版本',
-    '中科院学科标签',
-    '中科院升级版标签',
-    'JCR分区标签',
-    '新锐分区标签',
-    '新锐版本',
-    '检索标签',
-    'SJR标签',
-    '期刊类型标签',
-    '预警标签',
-    '其他标签',
-    '来源链接',
-  ],
+  CATALOG_CSV_HEADERS,
   [
     'Journal of Example Research',
     '期刊',
@@ -192,6 +194,69 @@ export const CATALOG_CSV_TEMPLATE = [
 ]
   .map((row) => row.map(escapeCsvCell).join(','))
   .join('\r\n');
+
+export function serializeVenueCatalog(records: readonly VenueRecord[]): string {
+  if (records.length > MAX_CATALOG_RECORDS) {
+    throw new Error(`目录最多允许 ${MAX_CATALOG_RECORDS} 条记录。`);
+  }
+  return [
+    CATALOG_CSV_HEADERS,
+    ...records.map(serializeVenueRecord),
+  ]
+    .map((row) => row.map(escapeCsvCell).join(','))
+    .join('\n');
+}
+
+function serializeVenueRecord(record: VenueRecord): string[] {
+  const labels = (kind: VenueLabel['kind']): string =>
+    (record.labels ?? [])
+      .filter((label) => label.kind === kind)
+      .map((label) => label.text)
+      .join('|');
+  const firstLabelEdition = (kind: VenueLabel['kind']): string | undefined =>
+    (record.labels ?? []).find(
+      (label) => label.kind === kind && label.edition,
+    )?.edition;
+  const casEdition =
+    record.cas?.edition ??
+    firstLabelEdition('cas-upgraded') ??
+    firstLabelEdition('cas-discipline');
+  const sourceUrl =
+    record.impactFactor?.sourceUrl ??
+    record.cas?.sourceUrl ??
+    record.ccf?.sourceUrl ??
+    record.school?.sourceUrl ??
+    '';
+
+  return [
+    record.canonicalName,
+    record.type === 'conference' ? '会议' : '期刊',
+    record.aliases.join('|'),
+    (record.acronyms ?? []).join('|'),
+    (record.issn ?? []).join('|'),
+    record.cas ? `${record.cas.rank}区` : '',
+    casEdition ?? '',
+    record.ccf?.rank ?? '',
+    record.ccf?.edition ?? '',
+    record.impactFactor ? String(record.impactFactor.value) : '',
+    record.impactFactor?.year ?? '',
+    record.impactFactor?.sourceLabel ?? '',
+    record.school?.rank ?? '',
+    record.school?.catalog ?? '',
+    record.school?.edition ?? '',
+    labels('cas-discipline'),
+    labels('cas-upgraded'),
+    labels('jcr-quartile'),
+    labels('new-rising'),
+    firstLabelEdition('new-rising') ?? '',
+    labels('indexing'),
+    labels('sjr'),
+    labels('publication-type'),
+    labels('warning'),
+    labels('note'),
+    sourceUrl,
+  ];
+}
 
 function parseJsonRows(text: string): RawRow[] {
   let parsed: unknown;
