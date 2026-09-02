@@ -5,6 +5,7 @@ export type VenueLabelKind =
   | 'cas-upgraded'
   | 'cas-discipline'
   | 'jcr-quartile'
+  | 'ccf-chinese'
   | 'new-rising'
   | 'indexing'
   | 'pku-core'

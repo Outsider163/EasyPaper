@@ -27,6 +27,7 @@ describe('catalog export', () => {
         },
         school: { rank: 'A', edition: '2026', catalog: '示例大学' },
         labels: [
+          { kind: 'ccf-chinese', text: 'T2', edition: '2025' },
           { kind: 'cas-discipline', text: '计算机科学 1区', edition: '2025' },
           { kind: 'cas-upgraded', text: '计算机科学 TOP', edition: '2025' },
           { kind: 'jcr-quartile', text: '信息系统 Q1（1/266）', edition: '2025' },
@@ -50,7 +51,7 @@ describe('catalog export', () => {
     const csv = serializeVenueCatalog(records);
     expect(csv.split('\n')[0]).toBe(CATALOG_CSV_HEADERS.join(','));
     expect(csv.split('\n')[0]).toContain(
-      '南大中文核心标签,CSSCI扩展版标签,中国科技核心标签,CSCD核心库标签,CSCD扩展库标签,中国科协高质量期刊标签',
+      'CCF中文期刊标签,CCF中文期刊版本,影响因子',
     );
     const result = parseVenueCatalog(csv, 'export.csv');
 

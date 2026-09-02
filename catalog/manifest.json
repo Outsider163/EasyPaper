@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "2025-2026-full.5",
-  "label": "EasyPaper 2025-2026 中文核心与科协目录",
-  "generatedAt": "2026-09-02T07:12:42.469Z",
-  "dataUrl": "./public-catalog.csv?v=2025-2026-full.5",
+  "catalogVersion": "2025-2026-full.6",
+  "label": "EasyPaper 2025-2026 中文核心、CCF 中文与科协目录",
+  "generatedAt": "2026-09-02T08:31:19.926Z",
+  "dataUrl": "./public-catalog.csv?v=2025-2026-full.6",
   "fileName": "public-catalog.csv",
-  "sha256": "74ca1c6e0dbcc28cff5d9ec71e8314a1f19ca93eba6741dc263d9a8fcf196bcc",
-  "byteLength": 945703,
+  "sha256": "273d928f3ab0b4154d0974d7e863d713b21eeaf4fc18fca50e6348e1e09e058a",
+  "byteLength": 962523,
   "recordCount": 8184
 }

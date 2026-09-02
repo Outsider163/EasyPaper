@@ -4,6 +4,7 @@ import type { VenueLabel } from './types';
 export type RankingBadgeKind =
   | 'source'
   | 'ccf'
+  | 'ccf-chinese'
   | 'cas'
   | 'cas-upgraded'
   | 'cas-discipline'
@@ -57,6 +58,7 @@ export function buildRankingBadges(
     badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank} 类推荐` });
   }
   appendLabels(badges, supplemental, [
+    'ccf-chinese',
     'new-rising',
     'cas-upgraded',
     'cas-discipline',
@@ -148,6 +150,12 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       font-weight: 700;
     }
 
+    [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="ccf-chinese"] {
+      border-color: #f0a3a0;
+      background: #fff0ef;
+      color: #a50e0e;
+      font-weight: 700;
+    }
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="cas"] {
       border-color: #cbb7f4;
       background: #f3e8ff;
@@ -332,6 +340,7 @@ function appendLabels(
 }
 
 function formatVenueLabel(label: VenueLabel): string {
+  if (label.kind === 'ccf-chinese') return `CCF 中文 ${label.text} 推荐`;
   if (label.kind === 'new-rising') return `新锐分区 ${label.text}`;
   if (label.kind === 'cas-upgraded') return `SCI升级版 ${label.text}`;
   if (label.kind === 'cas-discipline') return `中科院 ${label.text}`;

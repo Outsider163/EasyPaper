@@ -8,9 +8,12 @@
     "cstpcd": 2693,
     "cstpcd_popular": 52,
     "cast_verified_before_name_filter": 6285,
-    "cast": 6250
+    "cast": 6250,
+    "ccf_chinese": 68
   },
   "labelRecordCounts": {
+    "CCF中文期刊标签": 68,
+    "CCF中文期刊版本": 68,
     "北大中文核心标签": 1986,
     "南大中文核心标签": 674,
     "CSSCI扩展版标签": 261,

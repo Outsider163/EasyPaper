@@ -29,6 +29,8 @@ const HEADER_ALIASES = {
   casEdition: ['casedition', '中科院版本', '中科院年份'],
   ccfRank: ['ccfrank', 'ccf', 'ccf级别', 'ccf推荐级别'],
   ccfEdition: ['ccfedition', 'ccf版本', 'ccf年份'],
+  ccfChineseLabels: ['ccfchineselabels', 'ccf中文期刊标签', 'ccf中文推荐标签', 'ccf中文期刊'],
+  ccfChineseEdition: ['ccfchineseedition', 'ccf中文期刊版本', 'ccf中文版本', 'ccf中文年份'],
   impactFactor: ['impactfactor', 'if', '影响因子'],
   impactFactorYear: ['impactfactoryear', 'ifyear', '影响因子年份', 'if年份'],
   impactFactorSource: ['impactfactorsource', 'ifsource', '影响因子来源'],
@@ -149,6 +151,8 @@ export const CATALOG_CSV_HEADERS = [
   '中科院版本',
   'CCF级别',
   'CCF版本',
+  'CCF中文期刊标签',
+  'CCF中文期刊版本',
   '影响因子',
   '影响因子年份',
   '影响因子来源',
@@ -187,6 +191,8 @@ export const CATALOG_CSV_TEMPLATE = [
     '2025',
     '',
     '',
+    'T1',
+    '2025',
     '4.2',
     '2025',
     'JCR',
@@ -259,6 +265,8 @@ function serializeVenueRecord(record: VenueRecord): string[] {
     casEdition ?? '',
     record.ccf?.rank ?? '',
     record.ccf?.edition ?? '',
+    labels('ccf-chinese'),
+    firstLabelEdition('ccf-chinese') ?? '',
     record.impactFactor ? String(record.impactFactor.value) : '',
     record.impactFactor?.year ?? '',
     record.impactFactor?.sourceLabel ?? '',
@@ -489,6 +497,11 @@ function parseVenueLabels(
     kind: VenueLabel['kind'];
     edition?: string;
   }> = [
+    {
+      field: 'ccfChineseLabels',
+      kind: 'ccf-chinese',
+      edition: readString(row.ccfChineseEdition),
+    },
     {
       field: 'casUpgradedLabels',
       kind: 'cas-upgraded',
