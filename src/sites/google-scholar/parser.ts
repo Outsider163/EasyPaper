@@ -47,18 +47,7 @@ export function parseGoogleScholarResult(
   }
 
   const url = normalizeOptional(link?.getAttribute('href'));
-  const metadataText = normalizeScholarWhitespace(
-    card.querySelector(METADATA_SELECTOR)?.textContent,
-  );
-  const metadataParts = metadataText
-    ? metadataText.split(METADATA_SEPARATOR).map(normalizeScholarWhitespace)
-    : [];
-  const {
-    authorsText,
-    publicationText,
-    publisherText,
-  } = partitionMetadata(metadataParts);
-  const { venueCandidate, year } = parsePublication(publicationText);
+  const metadata = parseGoogleScholarMetadata(card.querySelector(METADATA_SELECTOR)?.textContent);
 
   const id =
     normalizeOptional(card.getAttribute('data-cid')) ??
@@ -71,12 +60,24 @@ export function parseGoogleScholarResult(
     id,
     title,
     url,
-    metadataText,
-    authorsText,
-    publicationText,
-    venueCandidate,
-    publisherText,
-    year,
+    ...metadata,
+  };
+}
+
+export type ScholarPublicationMetadata = Pick<GoogleScholarResult,
+  'metadataText' | 'authorsText' | 'publicationText' | 'venueCandidate' |
+  'publisherText' | 'year' | 'sourceTruncated'>;
+
+/** Shared by official Scholar and its custom-layout academic search adapters. */
+export function parseGoogleScholarMetadata(value: string | null | undefined): ScholarPublicationMetadata {
+  const metadataText = normalizeScholarWhitespace(value);
+  const metadataParts = metadataText
+    ? metadataText.split(METADATA_SEPARATOR).map(normalizeScholarWhitespace)
+    : [];
+  const { authorsText, publicationText, publisherText } = partitionMetadata(metadataParts);
+  const { venueCandidate, year } = parsePublication(publicationText);
+  return {
+    metadataText, authorsText, publicationText, venueCandidate, publisherText, year,
     sourceTruncated: venueCandidate ? ELLIPSIS_AT_EDGE.test(venueCandidate) : false,
   };
 }

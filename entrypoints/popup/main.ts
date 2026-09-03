@@ -4,6 +4,7 @@ import {
   loadUserVenueCatalog,
 } from '../../src/ranking/catalog-storage';
 import { loadSettings } from '../../src/settings';
+import { initializeSiteAccess } from '../../src/sites/site-access-popup';
 import './style.css';
 
 async function initializePopup(): Promise<void> {
@@ -28,3 +29,4 @@ async function initializePopup(): Promise<void> {
 }
 
 void initializePopup();
+void initializeSiteAccess();

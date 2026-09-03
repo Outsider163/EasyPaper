@@ -1,15 +1,16 @@
 # EasyPaper
 
-EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 Google Scholar 的检索结果中自动识别论文来源，从 GitHub 数据服务器自动更新目录，并在页面上直接显示国际 CCF A/B/C、CCF 中文 T1/T2/T3、学校分级、中科院升级版、JCR、新锐分区、北大中文核心、CSSCI 来源/扩展版、中国科技核心、CSCD 核心/扩展库、中国科协高质量期刊、影响因子、SJR 等标签。
+EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网、Google Scholar 及用户授权的兼容学术页面中识别论文来源，从 GitHub 数据服务器自动更新目录，并在页面上直接显示国际 CCF A/B/C、CCF 中文 T1/T2/T3、学校分级、中科院升级版、JCR、新锐分区、北大中文核心、CSSCI 来源/扩展版、中国科技核心、CSCD 核心/扩展库、中国科协高质量期刊、影响因子、SJR 等标签。
 
 当前版本内置 CCF 第七版目录和《云南财经大学学术期刊分级标准与目录（2026）》，支持服务器全量目录，也支持通过 CSV、TSV 或 JSON 补充自己的数据。
 
-> 当前版本为 `0.6.3`，新增 CCF 2025 国内期刊 T1/T2/T3 推荐标签，并与国际 CCF A/B/C、中国科协高质量期刊标签分别显示。
+> 当前版本为 `0.8.1`，重点扩展计算机领域网站：新增 DBLP、CVF Open Access、PMLR、NeurIPS 论文列表和 USENIX 适配，并包含此前的学术入口授权与多站点识别功能。[下载 v0.8.1](https://github.com/Outsider163/EasyPaper/releases/tag/v0.8.1)。除知网和官方 Scholar 外，新站点需在工具栏 EasyPaper 中启用当前网站识别。
 
 ## 功能特性
 
 - 自动识别中国知网检索结果页和论文详情页中的来源期刊；
 - 自动识别 Google Scholar 检索结果中的期刊或会议；
+- 在其他学术页面点击工具栏 EasyPaper → “在当前网站启用识别”，授权一次后自动运行，可随时关闭；
 - 显示 `CCF-A 类推荐`、`CCF-B 类推荐`、`CCF-C 类推荐` 标签；
 - 显示 `CCF 中文 T1 推荐`、`CCF 中文 T2 推荐`、`CCF 中文 T3 推荐` 标签；
 - 自定义或在线目录明确提供时，显示北大中文核心、CSSCI 来源/扩展版、中国科技核心、CSCD 核心/扩展库和中国科协高质量期刊标签；
@@ -27,6 +28,7 @@ EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 
 - 支持 SJR 数值、SJR 最佳 Q区和 H-index 标签；
 - 支持 Review、Data Journal、Under Review 和目录附加标注；
 - 将中科院升级版、JCR 与新锐分别标识，不把 JCR Q1 冒充“SCI 基础版 1区”；
+- 计算机领域的官方论文集列表支持单页最多 5,000 条，兼顾大型会议目录与页面性能；
 - 采用精确名称、受控别名和简称匹配，遇到截断或歧义来源时不猜测等级；
 - 在线服务器目录从 EasyPaper GitHub 仓库下载，并在浏览器本地缓存；
 - 用户手动上传的文件仍只在浏览器本地解析和保存，不发送到服务器。
@@ -35,8 +37,26 @@ EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 
 
 | 网站 | 当前能力 |
 | --- | --- |
+| 学术猫等入口打开的知网 / Scholar 兼容页面 | 在实际论文页授权一次后识别；入口、域名或端口变化时需重新启用 |
+| 含 citation 元数据的论文详情页 | 授权后读取论文标题与期刊/会议元数据；标题与可见页面一致时显示标签 |
 | 中国知网 | 识别检索结果与论文详情页来源，显示等级标签 |
 | Google Scholar | 识别检索结果中的期刊或会议，显示等级标签 |
+| [GoogleScholar.pro](https://www.googlescholar.pro/)（第三方学术搜索） | 单独适配自定义结果卡片；授权后读取来源期刊，不读取或覆盖网站自己的分区标签 |
+| [PubMed](https://pubmed.ncbi.nlm.nih.gov/) | 论文检索结果；保留页面刊名缩写，只有目录明确收录名称/别名才给等级 |
+| [JMLR](https://www.jmlr.org/papers/) | 卷目录论文列表、论文详情页 |
+| [ACL Anthology](https://aclanthology.org/) | 论文详情页；明确的 ACL 主会长/短文卷可匹配主会，Findings/Workshop 不套用主会等级 |
+| [PLOS](https://journals.plos.org/) | 具有 citation 元数据的论文详情页，不把网站标志当论文标题 |
+| [DBLP](https://dblp.org/) | 检索结果、作者页与单篇记录中的结构化期刊/会议条目；支持 dblp.uni-trier.de 镜像；简称仍需命中目录 |
+| [CVF Open Access](https://openaccess.thecvf.com/) | CVPR / ICCV / WACV / ACCV 主会目录与详情的已适配结构；不把 Workshop 当主会 |
+| [PMLR](https://proceedings.mlr.press/) | 卷目录与论文详情；对 ICML、AISTATS、COLT、UAI、ALT 的完整主会名称作受控规范化，不把所有 PMLR 卷都当 ICML |
+| [NeurIPS Proceedings](https://proceedings.neurips.cc/) | 主会论文列表与详情；其他独立轨道暂不套用主会等级 |
+| [USENIX](https://www.usenix.org/) | OSDI / FAST / Security / ATC / NSDI 的已适配 technical-sessions 列表和详情结构；排除演讲、Panel 和跨会场链接 |
+
+以上新增站点均需“在当前网站启用识别”，不是安装后自动获取其访问权限。**支持识别出处不代表每篇都有全部指标**：目录中有哪项才显示哪项，会议不会凭空获得期刊影响因子。
+
+v0.8.1 使用公开真实 HTML 样本核验了 DBLP 检索/单篇、CVPR 2025 列表/详情、PMLR ICML 列表/详情、NeurIPS 列表/详情、OSDI 列表/详情；作者页、其他同结构会议和镜像通过结构测试覆盖，未逐年逐站实测。此前的 PubMed 列表、JMLR、ACL/PLOS 详情样本也已回归。**尚未在用户浏览器中完成实际排版验收。**
+
+ACM Digital Library、IEEE Xplore、OpenReview、Semantic Scholar、ScienceDirect、Springer、Nature 等页面可以授权尝试通用 citation 元数据识别，但本版没有承诺整站专门支持。部分站点本次返回访问限制、验证页或动态空壳；登录页、验证码、预印本和未录用投稿不会仅凭站点名获得 CCF 等级。网站结构变化后可能需要更新适配。
 
 ## 内置与在线目录
 
@@ -69,7 +89,7 @@ EasyPaper 是一个学术论文分区浏览器扩展。它会在中国知网和 
 
 ### 方式一：下载测试版
 
-1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载 `easypaper-0.6.3-chrome.zip`；
+1. 从 [GitHub Releases](https://github.com/Outsider163/EasyPaper/releases/latest) 下载该版本的 `easypaper-版本号-chrome.zip`；
 2. 将 ZIP 解压到一个固定目录；
 3. 在 Chrome 地址栏打开 `chrome://extensions/`；
 4. 打开右上角的“开发者模式”；
@@ -130,9 +150,34 @@ npm run build
 
 如果页面来源文字被截断、目录没有该来源，或一个简称对应多个出版物，EasyPaper 只显示来源标签，不会强行添加等级。
 
+### 学术猫与其他学术入口
+
+1. 从学术入口进入真正显示论文列表或论文详情的页面，不是在数据库导航首页启用；
+2. 点击浏览器工具栏的 EasyPaper 图标；
+3. 点击“在当前网站启用识别”，并在浏览器提示中允许访问当前网站；
+4. 当前页面会尝试立即显示标签；若提示刷新，请刷新论文页面；
+5. 同一地址下再次访问、翻页或重新检索时会自动识别，可在弹窗中关闭。
+
+这不是“所有网页都能识别”：当前兼容上表所列页面结构，以及同时提供 `citation_title` 和 `citation_journal_title` / `citation_conference_title` 的详情页。详情页元数据标题须与可见论文标题一致，允许论文标题使用 h1–h4，跳过导航、隐藏标题与悬浮副本；冲突或过期数据不贴标签。普通导航、登录页、浏览器内部页、PDF 阅读器及缺少来源信息的页面不在本次支持范围。网站使用全新页面结构时仍需专门适配。
+
+标签沿用已有完整目录：命中什么标签就显示什么；无目录记录或来源被截断时不猜测等级。授权网站中的同源子页面/框架也可识别；跨域框架需要对应地址另行授权。
+
+GoogleScholar.pro 使用自定义卡片布局，需要 `0.7.1` 或更新版本。打开其检索结果页，在工具栏 EasyPaper 中启用当前网站识别。插件只读取卡片的来源行，不以标题、摘要、出版社域名或网站自带的影响因子猜测目录记录。首页、仅有书名/年份的记录不添加期刊分区。
+
+DBLP 读取每条文献自身的结构化出处，不扫描作者简介、摘要或参考文献中的任意会议名。NIPS 历史简称仅在明确的 NeurIPS 主会卷链接下规范化；不将未知缩写自动展开。CVF 与 USENIX 同时核对官方地址、会议路径和条目结构，避免把同域名的附属活动统一标成主会。PMLR 的系列名本身不是 CCF 会议名。
+
+PubMed 显示的常是期刊缩写，不会联网逐篇抓取详情来补全；缩写不在目录时只显示来源。ACL Anthology 收录很多不同会议和附属出版物，插件不会仅凭网站名或 ACL 字样给所有论文标 CCF-A。JMLR 的固定期刊归属仅在官方期刊卷目录及正确论文链接结构下采用。
+
+### 网站访问权限与隐私
+
+- 新站点采用可选权限。点击启用时仅请求当前主机，不会一次性获得所有网站的访问权限；这是 Chrome 官方支持的[可选权限机制](https://developer.chrome.com/docs/extensions/reference/api/permissions)。
+- 浏览器按主机授权，不区分端口。EasyPaper 额外核对已保存的协议、主机和端口，只在选择的地址处理论文。
+- 已启用的网站地址仅存储在浏览器本地，不记录检索词、完整论文 URL 或浏览历史，也不上传网页内容；论文名称匹配在本地完成。
+- 关闭网站识别会清除该地址的标签并停止观察页面；不再被其他已启用地址使用的可选主机权限也会释放。
+
 ## 在线服务器目录
 
-EasyPaper v0.6.3 使用 GitHub 仓库作为静态数据服务器：先读取 `catalog/manifest.json`，再下载 `catalog/public-catalog.csv`。首次安装和从旧版升级时会立即获取最新目录，以后每 12 小时最多检查一次；用户手动导入的目录仍不会被覆盖。用户也可以在“扩展设置 → 在线服务器目录”中立即更新或关闭自动更新。
+EasyPaper 使用 GitHub 仓库作为静态数据服务器：先读取 `catalog/manifest.json`，再下载 `catalog/public-catalog.csv`。首次安装和从旧版升级时会立即获取最新目录，以后每 12 小时最多检查一次；用户手动导入的目录仍不会被覆盖。用户也可以在“扩展设置 → 在线服务器目录”中立即更新或关闭自动更新。目录自动更新不包含扩展程序代码；新增网站识别功能需要更新安装包或重新构建、重新加载扩展。
 
 清单包含目录版本、生成时间、记录数、字节数和 SHA256。任一校验失败时，插件会保留浏览器中的现有数据。当前服务器目录为 8,184 条合并记录；已安装的浏览器会自动切换到新版本，无需重新安装扩展。
 
@@ -226,6 +271,11 @@ npm run build:firefox
 - 中国知网页面解析；
 - Google Scholar 页面解析；
 - 名称、别名和简称匹配；
+- 学术兼容页面、详情元数据、多层标题、动态更新及防止导航/隐藏标题误标；
+- DBLP 结构化出处、CVF 主会与 Workshop、PMLR 完整会议名、NeurIPS 独立轨道与 USENIX 演讲边界；
+- 500 条以上的会议列表、重复渲染和来源变更后的旧标签清理；
+- PubMed 刊名缩写与日期边界、JMLR 卷目录来源、ACL 主会/Findings/Workshop 区分；
+- 当前网站授权、拒绝授权、关闭、撤销权限、重启恢复与跨端口边界；
 - 截断、冲突和重复 ID 等安全边界；
 - 用户目录导入与字段校验；
 - CCF 与云南财经大学目录数量和代表性条目；
@@ -239,6 +289,13 @@ entrypoints/                 WXT 扩展入口、内容脚本、弹窗和设置�
 src/ranking/                目录数据、匹配器、标签和导入逻辑
 src/sites/cnki/             中国知网解析与页面装饰
 src/sites/google-scholar/   Google Scholar 解析与页面装饰
+src/sites/academic/         兼容学术页面识别、标签与动态观察
+src/sites/scholar-pro/      GoogleScholar.pro 自定义卡片解析
+src/sites/pubmed/           PubMed 检索结果解析
+src/sites/jmlr/             JMLR 官方卷目录解析
+src/sites/computer-science/ DBLP、CVF、PMLR、NeurIPS、USENIX 适配
+src/sites/acl-anthology/    ACL 主会来源规范化与附属卷边界
+src/sites/site-access*     当前网站授权、后台注册与弹窗入口
 tests/                      自动测试与页面夹具
 ```
 

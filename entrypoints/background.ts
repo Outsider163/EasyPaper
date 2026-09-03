@@ -2,11 +2,13 @@ import { browser } from 'wxt/browser';
 import { loadCatalogMetadata, loadUserVenueCatalog } from '../src/ranking/catalog-storage';
 import { updateRemoteCatalog } from '../src/ranking/remote-catalog';
 import { loadSettings, saveSettings } from '../src/settings';
+import { installSiteAccessHandlers } from '../src/sites/site-access-background';
 
 const REMOTE_CATALOG_ALARM = 'easypaper-remote-catalog-update';
 const UPDATE_PERIOD_MINUTES = 12 * 60;
 
 export default defineBackground(() => {
+  installSiteAccessHandlers();
   console.info('[EasyPaper] background service worker ready');
   let activeUpdate: Promise<void> | undefined;
 
