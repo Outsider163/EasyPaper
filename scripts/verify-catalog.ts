@@ -2,6 +2,10 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 import { parseVenueCatalog } from '../src/ranking/catalog-import';
+import {
+  resetUserVenueCatalog,
+  setUserVenueCatalog,
+} from '../src/ranking/registry';
 import { parseRemoteCatalogManifest } from '../src/ranking/remote-catalog-core';
 
 const manifestText = await readFile('catalog/manifest.json', 'utf8');
@@ -28,6 +32,8 @@ if (result.records.length !== manifest.recordCount) {
     `目录记录数不一致：清单 ${manifest.recordCount}，实际 ${result.records.length}。`,
   );
 }
+const activation = setUserVenueCatalog(result.records);
+resetUserVenueCatalog();
 
 console.log(
   JSON.stringify({
@@ -36,5 +42,6 @@ console.log(
     bytes: bytes.byteLength,
     sha256: actualSha256,
     warnings: result.warnings.length,
+    activeRecords: activation.activeRecords,
   }),
 );

@@ -1,5 +1,5 @@
 {
-  "recordCount": 7184,
+  "recordCount": 8142,
   "inputCounts": {
     "cscd": 1504,
     "pku": 1987,
@@ -7,9 +7,10 @@
     "cssci_extended": 261,
     "cstpcd": 2693,
     "cstpcd_popular": 52,
-    "cast_verified_before_name_filter": 6285,
-    "cast": 6250,
-    "ccf_chinese": 68
+    "cast_verified_before_name_filter": 7562,
+    "cast": 7527,
+    "ccf_chinese": 68,
+    "fms_management": 1277
   },
   "labelRecordCounts": {
     "CCF中文期刊标签": 68,
@@ -20,9 +21,9 @@
     "中国科技核心标签": 2740,
     "CSCD核心库标签": 1111,
     "CSCD扩展库标签": 384,
-    "中国科协高质量期刊标签": 4922
+    "中国科协高质量期刊标签": 5922
   },
-  "castVerifiedFieldCount": 42,
+  "castVerifiedFieldCount": 43,
   "castTruncatedNamesExcluded": 35,
   "castExcludedFields": [
     {
@@ -86,11 +87,6 @@
       "extracted": 31
     },
     {
-      "field": "管理科学",
-      "expected": 1277,
-      "extracted": 1290
-    },
-    {
       "field": "图像图形",
       "expected": 195,
       "extracted": 198
@@ -110,5 +106,27 @@
       "expected": 225,
       "extracted": 0
     }
-  ]
+  ],
+  "fmsManagement": {
+    "version": "2025",
+    "recordCount": 1277,
+    "rankCounts": {
+      "T1": 28,
+      "T2": 66,
+      "A": 102,
+      "B": 375,
+      "C": 493,
+      "D": 213
+    },
+    "officialDownloads": {
+      "chinese": {
+        "url": "https://www.fms-journal.net/download_cn_pdf",
+        "sha256": "988844E4C37C9E2FBBAE104D35828CFE585D68B96549236DFAD323A139FA3F5"
+      },
+      "international": {
+        "url": "https://www.fms-journal.net/download_pdf",
+        "sha256": "F66CD34570DB6EBF7308A0C9B9BB0F8383323E157A09D7921AD03C7234BA0D53"
+      }
+    }
+  }
 }

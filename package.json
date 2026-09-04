@@ -13,6 +13,7 @@
     "zip:firefox": "wxt zip -b firefox",
     "catalog:build": "vite-node scripts/build-public-catalog.ts",
     "catalog:build:core": "vite-node scripts/build-public-catalog.ts",
+    "catalog:merge:fms": "vite-node scripts/merge-fms-management.ts",
     "catalog:publish": "vite-node scripts/publish-catalog.ts",
     "catalog:verify": "vite-node scripts/verify-catalog.ts",
     "test": "vitest run",

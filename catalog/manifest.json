@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "2025-2026-full.6",
-  "label": "EasyPaper 2025-2026 中文核心、CCF 中文与科协目录",
-  "generatedAt": "2026-09-02T08:31:19.926Z",
-  "dataUrl": "./public-catalog.csv?v=2025-2026-full.6",
+  "catalogVersion": "2025-2026-full.7",
+  "label": "EasyPaper 2025-2026 全量目录（含 FMS 管理科学）",
+  "generatedAt": "2026-09-04T02:07:31.848Z",
+  "dataUrl": "./public-catalog.csv?v=2025-2026-full.7",
   "fileName": "public-catalog.csv",
-  "sha256": "273d928f3ab0b4154d0974d7e863d713b21eeaf4fc18fca50e6348e1e09e058a",
-  "byteLength": 962523,
-  "recordCount": 8184
+  "sha256": "d5ee1630291d4cc33bdaf275e11925b511c95ee94ef138b97e4bc35be406374b",
+  "byteLength": 1063618,
+  "recordCount": 8775
 }
