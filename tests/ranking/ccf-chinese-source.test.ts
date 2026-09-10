@@ -59,6 +59,7 @@ describe('CCF 2025 Chinese journal source', () => {
     expect(buildRankingBadges(match, '计算机学报')).toContainEqual({
       kind: 'ccf-chinese',
       text: 'CCF 中文 T1 推荐',
+      edition: '2025',
     });
     expect(buildRankingTooltip('知网', match, '计算机学报')).toContain(
       'CCF 中文 T1 推荐（2025）',

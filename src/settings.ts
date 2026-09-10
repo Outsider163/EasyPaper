@@ -1,8 +1,10 @@
 import { browser } from 'wxt/browser';
+import { normalizeLabelDisplay, setLabelDisplay, type LabelDisplaySettings } from './ranking/display-settings';
 
 export interface ExtensionSettings {
   enabled: boolean;
   autoCatalogUpdates: boolean;
+  labelDisplay?: LabelDisplaySettings;
 }
 
 const SETTINGS_KEY = 'settings';
@@ -16,7 +18,10 @@ export async function loadSettings(): Promise<ExtensionSettings> {
   const stored = await browser.storage.sync.get(SETTINGS_KEY);
   const settings = stored[SETTINGS_KEY] as Partial<ExtensionSettings> | undefined;
 
+  const labelDisplay = normalizeLabelDisplay(settings?.labelDisplay);
+  setLabelDisplay(labelDisplay);
   return {
+    labelDisplay,
     enabled: settings?.enabled ?? DEFAULT_SETTINGS.enabled,
     autoCatalogUpdates:
       settings?.autoCatalogUpdates ?? DEFAULT_SETTINGS.autoCatalogUpdates,

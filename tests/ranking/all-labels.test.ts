@@ -29,7 +29,7 @@ describe('all source-backed journal labels', () => {
     });
     const badges = buildRankingBadges(match, 'IEEE Communications Surveys & Tutorials');
 
-    expect(badges).toEqual([
+    expect(badges.map(({ kind, text }) => ({ kind, text }))).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：IEEE Communications Surveys & Tutorials' },
       { kind: 'new-rising', text: '新锐分区 计算机科学 1区' },
       { kind: 'new-rising', text: '新锐分区 计算机科学 TOP' },

@@ -307,3 +307,7 @@ code {
     align-items: flex-start;
   }
 }
+
+.label-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 16px 0; }
+.label-controls label { display: flex; align-items: center; gap: 6px; }
+fieldset { border: 1px solid #dce3ed; border-radius: 10px; margin: 16px 0; padding: 16px; }

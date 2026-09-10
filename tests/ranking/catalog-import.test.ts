@@ -71,7 +71,7 @@ describe('user venue catalog import', () => {
 
     setUserVenueCatalog(result.records);
     const match = ccf2026SeedMatcher.match({ candidate: 'IEEE Transactions on Pattern Analysis and Machine Intelligence' });
-    const badges = buildRankingBadges(match, 'TPAMI');
+    const badges = buildRankingBadges(match, 'TPAMI').map(({ kind, text }) => ({ kind, text }));
     expect(
       badges.filter((badge) =>
         ['new-rising', 'cas-discipline', 'indexing', 'publication-type', 'warning', 'note'].includes(badge.kind),
@@ -212,7 +212,7 @@ describe('active catalog and badges', () => {
       },
     });
 
-    expect(buildRankingBadges(match, 'NeurIPS')).toEqual([
+    expect(buildRankingBadges(match, 'NeurIPS').map(({ kind, text }) => ({ kind, text }))).toEqual([
       { kind: 'source', text: 'EasyPaper · 来源：NeurIPS' },
       { kind: 'ccf', text: 'CCF-A 类推荐' },
       { kind: 'cas', text: '中科院 1区' },
@@ -290,6 +290,7 @@ describe('active catalog and badges', () => {
     expect(buildRankingBadges(match, '财经研究')).toContainEqual({
       kind: 'school',
       text: '云南财经大学 A',
+      edition: '2026',
     });
   });
 

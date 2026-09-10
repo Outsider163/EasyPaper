@@ -103,7 +103,7 @@ describe('CNKI decoration', () => {
     expect(
       panels.item(0).querySelector(`[${RANKING_BADGE_ATTRIBUTE}="ccf"]`)
         ?.textContent,
-    ).toBe('CCF-A 类推荐');
+    ).toBe('CCF-A 类推荐（第七版（2026年））');
     expect(panels.item(0).getAttribute(CNKI_CCF_RANK_ATTRIBUTE)).toBe('A');
     expect(panels.item(1).textContent).toBe('EasyPaper · 来源：情报科学');
     expect(
@@ -128,7 +128,7 @@ describe('CNKI decoration', () => {
     );
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="cas"]`)?.textContent,
-    ).toBe('中科院 2区');
+    ).toBe('中科院 2区（2025）');
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="impact-factor"]`)
         ?.textContent,
@@ -156,7 +156,7 @@ describe('CNKI decoration', () => {
     );
     expect(
       panel?.querySelector(`[${RANKING_BADGE_ATTRIBUTE}="ccf"]`)?.textContent,
-    ).toBe('CCF-A 类推荐');
+    ).toBe('CCF-A 类推荐（第七版（2026年））');
     expect(panel?.previousElementSibling?.tagName).toBe('H1');
   });
 

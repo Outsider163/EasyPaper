@@ -25,11 +25,21 @@
         <label class="setting-row">
           <span>
             <strong>启用论文来源与等级标签</strong>
-            <small>保存后刷新已打开的论文检索页面。</small>
+            <small>保存后，已运行新版插件的论文页面自动更新标签。</small>
           </span>
           <input id="enabled" type="checkbox" />
         </label>
 
+        <fieldset>
+          <legend>显示哪些标签</legend>
+          <p>仅显示目录中已收录的数据。中国科协分级与 CCF 推荐分别控制。</p>
+          <div id="label-controls" class="label-controls"></div>
+          <button id="labels-all" type="button" class="secondary">全部显示</button>
+        </fieldset>
+        <label class="setting-row">
+          <span><strong>显示目录年份 / 版本</strong><small>有版本数据时显示；影响因子年份始终保留。标签文字自带的年份保留，鼠标悬停可查看完整说明。</small></span>
+          <input id="show-edition" type="checkbox" />
+        </label>
         <div class="actions">
           <button type="submit">保存设置</button>
           <span id="save-status" class="status" role="status" aria-live="polite"></span>

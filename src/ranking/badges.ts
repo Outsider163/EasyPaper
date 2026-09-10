@@ -1,5 +1,6 @@
 import type { VenueMatchResult } from './matcher';
 import type { VenueLabel } from './types';
+import { getLabelDisplay } from './display-settings';
 
 export type RankingBadgeKind =
   | 'source'
@@ -28,6 +29,7 @@ export type RankingBadgeKind =
 export interface RankingBadge {
   kind: RankingBadgeKind;
   text: string;
+  edition?: string;
 }
 
 export const RANKING_BADGE_ATTRIBUTE = 'data-easypaper-badge';
@@ -55,7 +57,7 @@ export function buildRankingBadges(
   }
   const supplemental = matchedVenue.labels ?? [];
   if (matchedVenue.ccf) {
-    badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank} 类推荐` });
+    badges.push({ kind: 'ccf', text: `CCF-${matchedVenue.ccf.rank} 类推荐`, edition: matchedVenue.ccf.edition });
   }
   appendLabels(badges, supplemental, [
     'ccf-chinese',
@@ -78,7 +80,7 @@ export function buildRankingBadges(
       label.kind === 'cas-upgraded' || label.kind === 'cas-discipline',
   );
   if (matchedVenue.cas && !hasDetailedCasLabel) {
-    badges.push({ kind: 'cas', text: `中科院 ${matchedVenue.cas.rank}区` });
+    badges.push({ kind: 'cas', text: `中科院 ${matchedVenue.cas.rank}区`, edition: matchedVenue.cas.edition });
   }
   if (matchedVenue.impactFactor) {
     badges.push({
@@ -89,6 +91,7 @@ export function buildRankingBadges(
   if (matchedVenue.school) {
     badges.push({
       kind: 'school',
+      edition: matchedVenue.school.edition,
       text: `${matchedVenue.school.catalog ?? '学校'} ${matchedVenue.school.rank}`,
     });
   }
@@ -100,16 +103,20 @@ export function renderRankingBadges(
   panel: HTMLElement,
   badges: readonly RankingBadge[],
 ): void {
-  const signature = JSON.stringify(badges);
+  const display = getLabelDisplay();
+  const visible = badges.filter((badge) => !display.hiddenKinds.includes(badge.kind));
+  const signature = JSON.stringify([visible, display.showEdition]);
   if (panel.getAttribute('data-easypaper-badge-signature') === signature) {
     return;
   }
 
   const ownerDocument = panel.ownerDocument;
-  const elements = badges.map((badge) => {
+  const elements = visible.map((badge) => {
     const element = ownerDocument.createElement('span');
     element.setAttribute(RANKING_BADGE_ATTRIBUTE, badge.kind);
-    element.textContent = badge.text;
+    const edition = badge.edition && !badge.text.includes(badge.edition) ? editionText(badge.edition) : '';
+    element.textContent = badge.text + (display.showEdition ? edition : '');
+    element.title = badge.text + edition;
     return element;
   });
   panel.replaceChildren(...elements);
@@ -141,6 +148,7 @@ export function createRankingBadgeCss(panelAttribute: string): string {
       background: #f1f6ff;
       color: #174ea6;
       white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     [${panelAttribute}] [${RANKING_BADGE_ATTRIBUTE}="ccf"] {
@@ -334,7 +342,7 @@ function appendLabels(
 ): void {
   for (const kind of kinds) {
     for (const label of labels.filter((item) => item.kind === kind)) {
-      badges.push({ kind, text: formatVenueLabel(label) });
+      badges.push({ kind, text: formatVenueLabel(label), edition: label.edition });
     }
   }
 }

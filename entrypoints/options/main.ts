@@ -24,6 +24,7 @@ import {
 import type { VenueRecord } from '../../src/ranking/types';
 import { loadSettings, saveSettings } from '../../src/settings';
 import './style.css';
+import { LABEL_CHOICES, normalizeLabelDisplay } from '../../src/ranking/display-settings';
 
 let pendingImport: CatalogImportResult | undefined;
 
@@ -48,6 +49,22 @@ async function initializeOptions(): Promise<void> {
   const catalogStatus = document.querySelector<HTMLElement>('#catalog-status');
   const warnings = document.querySelector<HTMLUListElement>('#catalog-warnings');
   let settings = await loadSettings();
+  const display = normalizeLabelDisplay(settings.labelDisplay);
+  const labelControls = document.querySelector('#label-controls');
+  for (const [kind, title] of Object.entries(LABEL_CHOICES)) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.labelKind = kind;
+    input.checked = !display.hiddenKinds.includes(kind);
+    label.append(input, document.createTextNode(' ' + title));
+    labelControls?.append(label);
+  }
+  const showEdition = document.querySelector<HTMLInputElement>('#show-edition');
+  if (showEdition) showEdition.checked = display.showEdition;
+  document.querySelector('#labels-all')?.addEventListener('click', () => {
+    document.querySelectorAll<HTMLInputElement>('[data-label-kind]').forEach((input) => { input.checked = true; });
+  });
 
   if (enabled) enabled.checked = settings.enabled;
   if (autoUpdates) autoUpdates.checked = settings.autoCatalogUpdates;
@@ -55,10 +72,17 @@ async function initializeOptions(): Promise<void> {
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     settings = {
+      ...settings,
+      labelDisplay: {
+        hiddenKinds: Array.from(document.querySelectorAll<HTMLInputElement>('[data-label-kind]'))
+          .filter((input) => !input.checked).map((input) => input.dataset.labelKind!),
+        showEdition: showEdition?.checked ?? true,
+      },
       enabled: enabled?.checked ?? true,
       autoCatalogUpdates: autoUpdates?.checked ?? false,
     };
-    await saveSettings(settings);
+    try { await saveSettings(settings); }
+    catch (error) { showStatus(saveStatus, `保存失败：${errorMessage(error)}`, 'error'); return; }
     showStatus(
       saveStatus,
       settings.autoCatalogUpdates
