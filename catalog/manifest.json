@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "2025-2026-full.7",
-  "label": "EasyPaper 2025-2026 全量目录（含 FMS 管理科学）",
-  "generatedAt": "2026-09-04T02:07:31.848Z",
-  "dataUrl": "./public-catalog.csv?v=2025-2026-full.7",
+  "catalogVersion": "2025-2026-full.8",
+  "label": "EasyPaper 三校及全标签目录",
+  "generatedAt": "2026-09-11T02:28:56.619Z",
+  "dataUrl": "./public-catalog.csv?v=2025-2026-full.8",
   "fileName": "public-catalog.csv",
-  "sha256": "d5ee1630291d4cc33bdaf275e11925b511c95ee94ef138b97e4bc35be406374b",
-  "byteLength": 1063618,
-  "recordCount": 8775
+  "sha256": "ebe82541c6ef99220c9b21f3202b21b4a76d74f885322c75b2874a5d78d9950e",
+  "byteLength": 1403703,
+  "recordCount": 9060
 }

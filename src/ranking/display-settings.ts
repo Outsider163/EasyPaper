@@ -11,6 +11,7 @@ export const LABEL_CHOICES = {
 export interface LabelDisplaySettings {
   hiddenKinds: string[];
   showEdition: boolean;
+  hiddenSchools?: string[];
 }
 
 export function normalizeLabelDisplay(value: unknown): LabelDisplaySettings {
@@ -19,6 +20,7 @@ export function normalizeLabelDisplay(value: unknown): LabelDisplaySettings {
     hiddenKinds: Array.isArray(input.hiddenKinds)
       ? [...new Set(input.hiddenKinds.filter((key): key is string => typeof key === 'string' && Object.hasOwn(LABEL_CHOICES, key)))] : [],
     showEdition: input.showEdition !== false,
+    ...(Array.isArray(input.hiddenSchools) ? { hiddenSchools: [...new Set(input.hiddenSchools.filter((name): name is string => typeof name === 'string'))] } : {}),
   };
 }
 

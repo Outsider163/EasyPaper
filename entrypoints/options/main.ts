@@ -24,6 +24,7 @@ import {
 import type { VenueRecord } from '../../src/ranking/types';
 import { loadSettings, saveSettings } from '../../src/settings';
 import './style.css';
+import { SCHOOL_CHOICES, venueSchools } from '../../src/ranking/schools';
 import { LABEL_CHOICES, normalizeLabelDisplay } from '../../src/ranking/display-settings';
 
 let pendingImport: CatalogImportResult | undefined;
@@ -60,9 +61,21 @@ async function initializeOptions(): Promise<void> {
     label.append(input, document.createTextNode(' ' + title));
     labelControls?.append(label);
   }
+  const schoolControls = document.querySelector('#school-controls');
+  const extraSchools = (await loadUserVenueCatalog().catch(() => [])).flatMap((venue) => venueSchools(venue).map((school) => school.catalog ?? '学校目录'));
+  for (const name of new Set([...Object.keys(SCHOOL_CHOICES), ...extraSchools])) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.schoolName = name;
+    input.checked = !display.hiddenSchools?.includes(name);
+    label.append(input, document.createTextNode(' ' + name));
+    schoolControls?.append(label);
+  }
   const showEdition = document.querySelector<HTMLInputElement>('#show-edition');
   if (showEdition) showEdition.checked = display.showEdition;
   document.querySelector('#labels-all')?.addEventListener('click', () => {
+    document.querySelectorAll<HTMLInputElement>('[data-school-name]').forEach((input) => { input.checked = true; });
     document.querySelectorAll<HTMLInputElement>('[data-label-kind]').forEach((input) => { input.checked = true; });
   });
 
@@ -77,6 +90,8 @@ async function initializeOptions(): Promise<void> {
         hiddenKinds: Array.from(document.querySelectorAll<HTMLInputElement>('[data-label-kind]'))
           .filter((input) => !input.checked).map((input) => input.dataset.labelKind!),
         showEdition: showEdition?.checked ?? true,
+        hiddenSchools: Array.from(document.querySelectorAll<HTMLInputElement>('[data-school-name]'))
+          .filter((input) => !input.checked).map((input) => input.dataset.schoolName!),
       },
       enabled: enabled?.checked ?? true,
       autoCatalogUpdates: autoUpdates?.checked ?? false,
@@ -301,11 +316,7 @@ function renderCatalog(records: readonly VenueRecord[]): void {
           ? `${record.impactFactor.value}（${record.impactFactor.year}）`
           : '—',
       ),
-      cell(
-        record.school
-          ? `${record.school.catalog ?? '学校'} ${record.school.rank}`
-          : '—',
-      ),
+      cell(venueSchools(record).map((school) => `${school.catalog ?? '学校'} ${school.rank}`).join(' / ') || '—'),
       cell(formatLabels(record)),
     );
     preview.appendChild(row);

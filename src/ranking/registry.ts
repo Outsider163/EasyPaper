@@ -1,3 +1,4 @@
+import { mergeSchools, venueSchools } from './schools';
 import { BUNDLED_VENUES } from './data/bundled';
 import {
   createVenueMatcher,
@@ -52,12 +53,14 @@ export function resetUserVenueCatalog(): void {
 
 export function mergeVenueCatalogs(
   userVenues: readonly VenueRecord[],
+  baseVenues: readonly VenueRecord[] = BUNDLED_VENUES,
 ): VenueRecord[] {
-  const records: VenueRecord[] = BUNDLED_VENUES.map(cloneVenue);
+  const records: VenueRecord[] = baseVenues.map(cloneVenue);
+  const matcher = baseVenues === BUNDLED_VENUES ? bundledMatcher : createVenueMatcher(baseVenues);
   const recordIndex = new Map(records.map((venue, index) => [venue.id, index]));
 
   for (const userVenue of userVenues) {
-    const bundledMatch = findBundledVenue(userVenue);
+    const bundledMatch = findBundledVenue(userVenue, matcher);
 
     if (!bundledMatch) {
       records.push(cloneVenue(userVenue));
@@ -90,6 +93,7 @@ export function mergeVenueCatalogs(
       cas: userVenue.cas ?? bundledVenue.cas,
       impactFactor: userVenue.impactFactor ?? bundledVenue.impactFactor,
       school: userVenue.school ?? bundledVenue.school,
+      schools: mergeSchools(venueSchools(bundledVenue), venueSchools(userVenue)),
       labels: optionalLabelUnique([
         ...(bundledVenue.labels ?? []),
         ...(userVenue.labels ?? []),
@@ -100,7 +104,7 @@ export function mergeVenueCatalogs(
   return records;
 }
 
-function findBundledVenue(userVenue: VenueRecord): VenueRecord | undefined {
+function findBundledVenue(userVenue: VenueRecord, matcher = bundledMatcher): VenueRecord | undefined {
   const candidates = [
     userVenue.canonicalName,
     ...userVenue.aliases,
@@ -108,7 +112,7 @@ function findBundledVenue(userVenue: VenueRecord): VenueRecord | undefined {
   ];
   for (const candidate of candidates) {
     const venue = selectSameType(
-      bundledMatcher.match({ candidate, sourceTruncated: false }),
+      matcher.match({ candidate, sourceTruncated: false }),
       userVenue.type,
     );
     if (venue) {
@@ -155,6 +159,7 @@ function cloneVenue(venue: VenueRecord): VenueRecord {
     cas: venue.cas ? { ...venue.cas } : undefined,
     impactFactor: venue.impactFactor ? { ...venue.impactFactor } : undefined,
     school: venue.school ? { ...venue.school } : undefined,
+    schools: venue.schools?.map((school) => ({ ...school })),
     labels: venue.labels?.map((label) => ({ ...label })),
   };
 }

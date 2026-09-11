@@ -1,4 +1,5 @@
 import { normalizeVenueName } from './normalize';
+import { parseSchools } from './schools';
 import type {
   CasQuartile,
   CcfRank,
@@ -34,6 +35,7 @@ const HEADER_ALIASES = {
   impactFactor: ['impactfactor', 'if', '影响因子'],
   impactFactorYear: ['impactfactoryear', 'ifyear', '影响因子年份', 'if年份'],
   impactFactorSource: ['impactfactorsource', 'ifsource', '影响因子来源'],
+  schools: ['schools', '多学校等级'],
   schoolRank: ['schoolrank', '学校等级', '学校分区'],
   schoolName: ['schoolname', '学校名称', '学校目录'],
   schoolEdition: ['schooledition', '学校版本', '学校年份'],
@@ -117,9 +119,10 @@ export function parseVenueCatalog(
     const cas = parseCas(row, rowNumber, sourceUrl);
     const impactFactor = parseImpactFactor(row, rowNumber, sourceUrl);
     const school = parseSchool(row, sourceUrl);
+    const schools = parseSchools(row.schools);
     const labels = parseVenueLabels(row);
 
-    if (!ccf && !cas && !impactFactor && !school && labels.length === 0) {
+    if (!ccf && !cas && !impactFactor && !school && !schools?.length && labels.length === 0) {
       warnings.push(`第 ${rowNumber} 行“${name}”只有名称，没有等级指标。`);
     }
 
@@ -134,6 +137,7 @@ export function parseVenueCatalog(
       cas,
       impactFactor,
       school,
+      schools,
       labels: labels.length > 0 ? labels : undefined,
     });
   });
@@ -177,6 +181,7 @@ export const CATALOG_CSV_HEADERS = [
   '预警标签',
   '其他标签',
   '来源链接',
+  '多学校等级',
 ] as const;
 
 export const CATALOG_CSV_TEMPLATE = [
@@ -291,6 +296,7 @@ function serializeVenueRecord(record: VenueRecord): string[] {
     labels('warning'),
     labels('note'),
     sourceUrl,
+    record.schools?.length ? JSON.stringify(record.schools) : '',
   ];
 }
 

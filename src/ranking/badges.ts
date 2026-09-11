@@ -1,5 +1,6 @@
 import type { VenueMatchResult } from './matcher';
 import type { VenueLabel } from './types';
+import { schoolShortName, venueSchools } from './schools';
 import { getLabelDisplay } from './display-settings';
 
 export type RankingBadgeKind =
@@ -30,6 +31,7 @@ export interface RankingBadge {
   kind: RankingBadgeKind;
   text: string;
   edition?: string;
+  schoolName?: string;
 }
 
 export const RANKING_BADGE_ATTRIBUTE = 'data-easypaper-badge';
@@ -88,12 +90,10 @@ export function buildRankingBadges(
       text: `IF ${formatNumber(matchedVenue.impactFactor.value)}（${matchedVenue.impactFactor.year}）`,
     });
   }
-  if (matchedVenue.school) {
-    badges.push({
-      kind: 'school',
-      edition: matchedVenue.school.edition,
-      text: `${matchedVenue.school.catalog ?? '学校'} ${matchedVenue.school.rank}`,
-    });
+  for (const school of venueSchools(matchedVenue)) {
+    const schoolName = school.catalog ?? '学校';
+    badges.push({ kind: 'school', schoolName, edition: school.edition,
+      text: `${schoolShortName(schoolName)} ${school.rank}` });
   }
   appendLabels(badges, supplemental, ['sjr', 'publication-type', 'warning', 'note']);
   return badges;
@@ -104,7 +104,8 @@ export function renderRankingBadges(
   badges: readonly RankingBadge[],
 ): void {
   const display = getLabelDisplay();
-  const visible = badges.filter((badge) => !display.hiddenKinds.includes(badge.kind));
+  const visible = badges.filter((badge) => !display.hiddenKinds.includes(badge.kind) &&
+    !(badge.schoolName && display.hiddenSchools?.includes(badge.schoolName)));
   const signature = JSON.stringify([visible, display.showEdition]);
   if (panel.getAttribute('data-easypaper-badge-signature') === signature) {
     return;
@@ -116,7 +117,7 @@ export function renderRankingBadges(
     element.setAttribute(RANKING_BADGE_ATTRIBUTE, badge.kind);
     const edition = badge.edition && !badge.text.includes(badge.edition) ? editionText(badge.edition) : '';
     element.textContent = badge.text + (display.showEdition ? edition : '');
-    element.title = badge.text + edition;
+    element.title = (badge.schoolName ? `${badge.schoolName} · ` : '') + badge.text + edition;
     return element;
   });
   panel.replaceChildren(...elements);
@@ -324,10 +325,8 @@ export function buildRankingTooltip(
       `影响因子：${formatNumber(venue.impactFactor.value)}（${venue.impactFactor.year}）`,
     );
   }
-  if (venue.school) {
-    lines.push(
-      `${venue.school.catalog ?? '学校目录'}：${venue.school.rank}${editionText(venue.school.edition)}`,
-    );
+  for (const school of venueSchools(venue)) {
+    lines.push(`${school.catalog ?? '学校目录'}：${school.rank}${editionText(school.edition)}`);
   }
   for (const label of venue.labels ?? []) {
     lines.push(`${formatVenueLabel(label)}${editionText(label.edition)}`);

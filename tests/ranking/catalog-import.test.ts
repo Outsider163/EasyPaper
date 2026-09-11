@@ -218,6 +218,7 @@ describe('active catalog and badges', () => {
       { kind: 'cas', text: '中科院 1区' },
       { kind: 'impact-factor', text: 'IF 33.1（2025）' },
       { kind: 'school', text: '示例大学 A+' },
+      { kind: 'school', text: '云财 A' },
     ]);
   });
 
@@ -289,7 +290,8 @@ describe('active catalog and badges', () => {
     });
     expect(buildRankingBadges(match, '财经研究')).toContainEqual({
       kind: 'school',
-      text: '云南财经大学 A',
+      text: '云财 A',
+      schoolName: '云南财经大学',
       edition: '2026',
     });
   });

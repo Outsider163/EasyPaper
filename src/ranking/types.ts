@@ -52,5 +52,6 @@ export interface VenueRecord {
   cas?: RankingValue<CasQuartile>;
   impactFactor?: ImpactFactorValue;
   school?: RankingValue;
+  schools?: RankingValue[];
   labels?: VenueLabel[];
 }

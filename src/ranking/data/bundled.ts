@@ -7,6 +7,8 @@ import { normalizeVenueName } from '../normalize';
 import type { VenueRecord } from '../types';
 import { CCF_7TH_VENUES } from './ccf-7th';
 import { YNUFE_2026_VENUES } from './ynufe-2026';
+import schoolData from './schools-2025.json';
+import { addSchoolData } from './merge-school-data';
 
 const CONTROLLED_CCF_NAME_VARIANTS = new Map<string, readonly string[]>([
   [
@@ -17,7 +19,8 @@ const CONTROLLED_CCF_NAME_VARIANTS = new Map<string, readonly string[]>([
   ],
 ]);
 
-export const BUNDLED_VENUES: readonly VenueRecord[] = mergeBundledCatalogs();
+export const CORE_BUNDLED_VENUES: readonly VenueRecord[] = mergeBundledCatalogs();
+export const BUNDLED_VENUES: readonly VenueRecord[] = addSchoolData(CORE_BUNDLED_VENUES.map(cloneVenue), schoolData as VenueRecord[]);
 
 export const BUNDLED_CATALOG_STATS = Object.freeze({
   ccfPdfRows: 681,
